@@ -2,7 +2,10 @@
 #include "globals.h"
 #include "process.h"
 
-NTSTATUS createDevice(PDRIVER_OBJECT DriverObject, NTSTATUS status)
+NTSTATUS createDevice(
+	PDRIVER_OBJECT DriverObject,
+	NTSTATUS status
+)
 {
 	PAGED_CODE();
 	RtlInitUnicodeString(&DevName, NT_DEVICE_NAME);
@@ -27,7 +30,9 @@ NTSTATUS createDevice(PDRIVER_OBJECT DriverObject, NTSTATUS status)
 
 
 }
-NTSTATUS symLink(NTSTATUS status)
+NTSTATUS symLink(
+	NTSTATUS status
+)
 {
 	PAGED_CODE();
 	RtlInitUnicodeString(&Win32Name, DOS_DEVICE_NAME);
@@ -61,10 +66,11 @@ DriverEntry(
 	dbg("[+] Driver\n");
 
 	processInfo("Notepad.exe");
-
-	dbg("UniqueProcessId: %u\n", gUniqueProcessId);
-	dbg("ImageFileName: %s\n", gImageFileName);
-	dbg("ImageBaseAddress: 0x%p\n", gImageBaseAddress);
+	dbg("Source _EPROCESS Pointer: %p\n", g_SourceProcess);
+	dbg("Target _EPROCESS Pointer: %p\n", g_TargetProcess);
+	//dbg("UniqueProcessId: %u\n", g_UniqueProcessId);
+	//dbg("ImageFileName: %s\n", g_ImageFileName);
+	//dbg("ImageBaseAddress: 0x%p\n", g_ImageBaseAddress);
 
 	/*createDevice(DriverObject, status);
 	symLink(status);

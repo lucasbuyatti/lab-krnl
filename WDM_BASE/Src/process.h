@@ -3,16 +3,38 @@
 #include "globals.h"
 #include <limits.h>
 
-ULONG GetUniqueProcessId(PEPROCESS process);
-PUCHAR GetImageFileName(PEPROCESS process);
-PVOID GetImageBaseAddress(PEPROCESS process);
-PVOID GetDllBase(PEPROCESS process, CONST PCHAR dllname);
+typedef struct _PEB_LDR_DATA {
+	ULONG                   Length;
+	UCHAR					Initialized;
+	PVOID                   SsHandle;
+	LIST_ENTRY              InLoadOrderModuleList;
+	LIST_ENTRY              InMemoryOrderModuleList;
+	LIST_ENTRY              InInitializationOrderModuleList;
+	PVOID					EntryInProgress;
+	UCHAR					ShutdownInProgress;
+	PVOID					ShutdownThreadId;
+} PEB_LDR_DATA, * PPEB_LDR_DATA;
+
+ULONG GetUniqueProcessId(
+	PEPROCESS process
+);
+PUCHAR GetImageFileName(
+	PEPROCESS process
+);
+PVOID GetImageBaseAddress(
+	PEPROCESS process
+);
+PVOID GetDllBase(
+	PEPROCESS process,
+	CONST PCHAR dllname
+);
 
 VOID processInfo(CONST PCHAR filename)
 {
 	PAGED_CODE();
 	/* Obtengo el puntero a _EPROCESS */
 	PEPROCESS currProcess = PsGetCurrentProcess();
+	g_SourceProcess = currProcess;
 
 	/* Obtengo el puntero al miembro ActiveProcessLinks de la estructura _EPROCESS */
 	PLIST_ENTRY aplList = (PLIST_ENTRY)((ULONG_PTR)currProcess + 0x448);
@@ -21,22 +43,23 @@ VOID processInfo(CONST PCHAR filename)
 	entry = aplList;
 	do
 	{
-
 		/* Obtengo el _EPROCESS de los demas procesos */
 		/* Resto 0x448 (ActiveProcessLinks) para obtenerlo */
 		PEPROCESS processes = (PEPROCESS)((ULONG_PTR)entry - 0x448); // Variable que apunta a ActiveProcessLinks del siguiente proceso, luego se le resta 0x448 para dar con la estructura _EPROCCESS de este otro proceso
 
-		gImageFileName = GetImageFileName(processes);
+		g_ImageFileName = GetImageFileName(processes);
 
-		if (strcmp((CONST PCHAR)gImageFileName, filename) == 0)
+		if (strcmp((CONST PCHAR)g_ImageFileName, filename) == 0)
 		{
-			gUniqueProcessId = GetUniqueProcessId(processes);
-			gImageFileName = gImageFileName;
-			gImageBaseAddress = GetImageBaseAddress(processes);
+			g_TargetProcess = processes;
+			g_UniqueProcessId = GetUniqueProcessId(processes);
+			g_ImageFileName = g_ImageFileName;
+			g_ImageBaseAddress = GetImageBaseAddress(processes);
+			GetDllBase(processes, NULL);
 			return;
 		}
 
-		ExFreePool(gImageFileName);
+		ExFreePool(g_ImageFileName);
 
 		entry = entry->Flink;
 	} while (entry != aplList);
@@ -138,8 +161,19 @@ PVOID GetImageBaseAddress(PEPROCESS process)
 
 PVOID GetDllBase(PEPROCESS process, CONST PCHAR dllname)
 {
-	(process);
-	(dllname);
+	UNREFERENCED_PARAMETER(dllname);
+
+	PPEB peb = (PPEB)((ULONG_PTR)process + 0x550);
+	dbg("Miembro Peb: 0x%p\n", peb);
+
+	PPEB desRefPEB = *(PPEB*)peb;
+	dbg("Estructura _PEB: 0x%p\n", desRefPEB);
+
+	//KAPC_STATE apc;
+	PPEB_LDR_DATA Ldr = (PPEB_LDR_DATA)((ULONG_PTR)desRefPEB + 0x018);
+
+	dbg("Ldr: 0x%p\n", Ldr);
+
 	return NULL;
 }
 
