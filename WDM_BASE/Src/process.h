@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "includes.h"
 #include "globals.h"
 #include <limits.h>
@@ -92,7 +92,7 @@ PUCHAR GetImageFileName(PEPROCESS process)
 	/* Obtengo la longitud de ImageFileName */
 	SIZE_T imageNameLenght = strlen((CONST PCHAR)ImageFileName);
 
-	/* Asigno un bloque de memoria del tama�o especificado, con el tipo y la proteccion especificados */
+	/* Asigno un bloque de memoria del tamaño especificado, con el tipo y la proteccion especificados */
 	PUCHAR imageName = (PUCHAR)ExAllocatePool2(POOL_FLAG_NON_PAGED_EXECUTE, imageNameLenght + 1, 'aa');
 
 	if (!imageName)
@@ -159,6 +159,7 @@ PVOID GetImageBaseAddress(PEPROCESS process)
 	return imageBaseAddress;
 }
 
+/* ????? 🤯🤯🤯🤯 ????? */
 PVOID GetDllBase(PEPROCESS process, CONST PCHAR dllname)
 {
 	UNREFERENCED_PARAMETER(dllname);
@@ -166,13 +167,35 @@ PVOID GetDllBase(PEPROCESS process, CONST PCHAR dllname)
 	PPEB peb = (PPEB)((ULONG_PTR)process + 0x550);
 	dbg("Miembro Peb: 0x%p\n", peb);
 
-	PPEB desRefPEB = *(PPEB*)peb;
-	dbg("Estructura _PEB: 0x%p\n", desRefPEB);
+	// ???????????????????????
+	//PPEB desRefPEB = *(PPEB*)peb;
+	//dbg("Estructura _PEB: 0x%p\n", desRefPEB); 
 
-	//KAPC_STATE apc;
-	PPEB_LDR_DATA Ldr = (PPEB_LDR_DATA)((ULONG_PTR)desRefPEB + 0x018);
+	PPEB_LDR_DATA Ldr = (PPEB_LDR_DATA)((ULONG_PTR)peb + 0x018);
+	dbg("Miembro Ldr: 0x%p\n", Ldr);
 
-	dbg("Ldr: 0x%p\n", Ldr);
+	KAPC_STATE apc;
+	PPEB_LDR_DATA Ldr2 = NULL;
+	__try
+	{
+		KeStackAttachProcess(process, &apc);
+		
+		Ldr2 = *(PPEB_LDR_DATA*)((ULONG_PTR)Ldr - 0x550);
+		ProbeForRead((PVOID)Ldr2, sizeof(PPEB_LDR_DATA), sizeof(ULONG));
+	}
+	__except (EXCEPTION_EXECUTE_HANDLER)
+	{
+		/* Nada */
+
+	}
+
+	KeUnstackDetachProcess(&apc);
+	dbg("Estructura Ldr: %p\n", Ldr2);
+
+
+
+
+
 
 	return NULL;
 }
