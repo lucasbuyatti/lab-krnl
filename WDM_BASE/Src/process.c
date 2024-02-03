@@ -16,7 +16,7 @@ VOID processInfo(CONST PCHAR filename)
 	{
 		/* Obtengo el _EPROCESS de los demas procesos */
 		/* Resto 0x448 (ActiveProcessLinks) para obtenerlo */
-		PEPROCESS processes = (PEPROCESS)((ULONG_PTR)entry - 0x448); // Variable que apunta a ActiveProcessLinks del siguiente proceso, luego se le resta 0x448 para dar con la estructura _EPROCCESS de este otro proceso
+		PEPROCESS processes = (PEPROCESS)((ULONG_PTR)entry - 0x448);
 
 		g_ImageFileName = GetImageFileName(processes);
 
@@ -143,7 +143,7 @@ PVOID GetDllBase(PEPROCESS process, CONST PCHAR dllname)
 	}
 
 	KeUnstackDetachProcess(&apc);
-	dbg("Estructura Ldr: %p\n", Ldr2);
+	dbg("Estructura Ldr: %p\n", Ldr2->SsHandle);
 
 
 
