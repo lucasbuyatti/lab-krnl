@@ -1,4 +1,7 @@
 #pragma once
+#ifndef IOCTL_H
+#define IOCTL_H
+
 #include "driver.h"
 #include "globals.h"
 
@@ -10,7 +13,6 @@
 DRIVER_DISPATCH ioctlCreateClose;
 DRIVER_DISPATCH ioctlDeviceControl;
 
-
 NTSTATUS createDevice(
 	PDRIVER_OBJECT DriverObject,
 	NTSTATUS status
@@ -20,4 +22,4 @@ NTSTATUS symLink(
 	NTSTATUS status
 );
 
-
+#endif // !IOCTL_H
