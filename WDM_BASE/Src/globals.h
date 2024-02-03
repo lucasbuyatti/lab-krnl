@@ -1,8 +1,8 @@
 #pragma once
-#include "includes.h"
+#include "driver.h"
 
-UNICODE_STRING DevName;
-UNICODE_STRING Win32Name;
+extern UNICODE_STRING DevName;
+extern UNICODE_STRING Win32Name;
 extern PDEVICE_OBJECT DeviceObj = NULL;
 
 extern PVOID g_SourceProcess = NULL;

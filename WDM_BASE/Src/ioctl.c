@@ -1,6 +1,4 @@
-#include "includes.h"
-
-
+#include "ioctl.h"
 
 NTSTATUS ioctlCreateClose(PDEVICE_OBJECT pDeviceObject, PIRP irp)
 {
@@ -72,4 +70,55 @@ NTSTATUS ioctlDeviceControl(PDEVICE_OBJECT pDeviceObject, PIRP irp)
 	IoCompleteRequest(irp, IO_NO_INCREMENT);
 
 	return status;
+}
+
+NTSTATUS createDevice(
+	PDRIVER_OBJECT DriverObject,
+	NTSTATUS status
+)
+{
+	PAGED_CODE();
+	RtlInitUnicodeString(&DevName, NT_DEVICE_NAME);
+
+	status = IoCreateDevice(
+		DriverObject,
+		0,
+		&DevName,
+		FILE_DEVICE_UNKNOWN,
+		FILE_DEVICE_SECURE_OPEN,
+		FALSE,
+		&DeviceObj
+	);
+
+	if (!NT_SUCCESS(status))
+	{
+		dbg("[-] IoCreateDevice\n");
+		return status;
+	}
+	dbg("[+] IoCreateDevice\n");
+	return status;
+
+
+}
+NTSTATUS symLink(
+	NTSTATUS status
+)
+{
+	PAGED_CODE();
+	RtlInitUnicodeString(&Win32Name, DOS_DEVICE_NAME);
+
+	status = IoCreateSymbolicLink(
+		&Win32Name,
+		&DevName
+	);
+
+	if (!NT_SUCCESS(status))
+	{
+		dbg("[-] IoCreateSymbolicLink\n");
+		IoDeleteDevice(DeviceObj);
+		return status;
+	}
+	dbg("[+] IoCreateSymbolicLink\n");
+	return status;
+
 }

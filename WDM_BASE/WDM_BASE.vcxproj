@@ -126,9 +126,12 @@
     <ClCompile Include="Src\main.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\debug.h" />
     <ClInclude Include="Src\globals.h" />
-    <ClInclude Include="Src\includes.h" />
+    <ClInclude Include="Src\driver.h" />
+    <ClInclude Include="Src\ioctl.h" />
     <ClInclude Include="Src\process.h" />
+    <ClInclude Include="Src\struct.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
