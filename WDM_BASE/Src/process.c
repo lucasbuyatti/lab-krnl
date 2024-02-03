@@ -83,28 +83,10 @@ PVOID GetImageBaseAddress(PEPROCESS process)
 	if (!peb)
 		return NULL;
 
-	__try
-	{
-		ProbeForRead((PVOID)peb, sizeof(PPEB), sizeof(PVOID));
-	}
-	__except (EXCEPTION_EXECUTE_HANDLER)
-	{
-		/* Nada */
-	}
-
 	/* Obtengo el puntero del miembro ImageBaseAddress */
 	PVOID ptrImageBaseAddress = (PVOID)((ULONG_PTR)peb + 0x10);
 	if (!ptrImageBaseAddress)
 		return NULL;
-
-	__try
-	{
-		ProbeForRead((PVOID)ptrImageBaseAddress, sizeof(PPEB), sizeof(ULONG));
-	}
-	__except (EXCEPTION_EXECUTE_HANDLER)
-	{
-		/* Nada */
-	}
 
 	KAPC_STATE apcState;
 	PVOID imageBaseAddress = NULL;
