@@ -1,11 +1,11 @@
 ﻿#include "process.h"
 
 PVOID g_SourceProcess = NULL;
- PVOID g_TargetProcess = NULL;
- ULONG g_UniqueProcessId = 0;
- PUCHAR g_ImageFileName = NULL;
- PVOID g_ImageBaseAddress = NULL;
- PVOID g_DllBase = NULL;
+PVOID g_TargetProcess = NULL;
+ULONG g_UniqueProcessId = 0;
+PUCHAR g_ImageFileName = NULL;
+PVOID g_ImageBaseAddress = NULL;
+PVOID g_DllBase = NULL;
 
 VOID ProcessInfoByName(CONST PCHAR filename)
 {
@@ -127,38 +127,8 @@ PVOID GetDllBase(PEPROCESS process, CONST PCHAR dllname)
 	PPEB peb = (PPEB)((ULONG_PTR)process + 0x550);
 	dbg("Miembro Peb: 0x%p\n", peb);
 
-	// ???????????????????????
-	//PPEB desRefPEB = *(PPEB*)peb;
-	//dbg("Estructura _PEB: 0x%p\n", desRefPEB); 
-
-	PPEB_LDR_DATA Ldr = (PPEB_LDR_DATA)((ULONG_PTR)peb + 0x018);
-	dbg("Miembro Ldr: 0x%p\n", Ldr);
-
-	KAPC_STATE apc;
-	PPEB_LDR_DATA Ldr2 = NULL;
-	__try
-	{
-		KeStackAttachProcess(process, &apc);
-
-		Ldr2 = *(PPEB_LDR_DATA*)((ULONG_PTR)Ldr - 0x550);
-		ProbeForRead((PVOID)Ldr2, sizeof(PPEB_LDR_DATA), sizeof(ULONG));
-	}
-	__except (EXCEPTION_EXECUTE_HANDLER)
-	{
-		/* Nada */
-
-	}
-
-	dbg("Estructura Ldr: %p\n", Ldr2);
-	dbg("Miembro SsHandle: %p\n", Ldr2->SsHandle);
-
-	KeUnstackDetachProcess(&apc);
-
-
-
-
-
-
+	PPEB_LDR_DATA LdrData = (PPEB_LDR_DATA)((ULONG_PTR)peb + 0x018 - 0x550);
+	dbg("LdrData: 0x%p\n", LdrData); 
 
 	return NULL;
 }
