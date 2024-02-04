@@ -20,7 +20,7 @@ PVOID GetDllBase(
 	CONST PCHAR dllname
 );
 
-VOID processInfo(
+VOID ProcessInfoByName(
 	CONST PCHAR filename
 );
 

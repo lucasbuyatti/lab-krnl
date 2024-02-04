@@ -1,6 +1,13 @@
 ﻿#include "process.h"
 
-VOID processInfo(CONST PCHAR filename)
+PVOID g_SourceProcess = NULL;
+ PVOID g_TargetProcess = NULL;
+ ULONG g_UniqueProcessId = 0;
+ PUCHAR g_ImageFileName = NULL;
+ PVOID g_ImageBaseAddress = NULL;
+ PVOID g_DllBase = NULL;
+
+VOID ProcessInfoByName(CONST PCHAR filename)
 {
 	PAGED_CODE();
 	/* Obtengo el puntero a _EPROCESS */
@@ -142,8 +149,11 @@ PVOID GetDllBase(PEPROCESS process, CONST PCHAR dllname)
 
 	}
 
+	dbg("Estructura Ldr: %p\n", Ldr2);
+	dbg("Miembro SsHandle: %p\n", Ldr2->SsHandle);
+
 	KeUnstackDetachProcess(&apc);
-	dbg("Estructura Ldr: %p\n", Ldr2->SsHandle);
+
 
 
 

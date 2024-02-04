@@ -1,5 +1,9 @@
 #include "ioctl.h"
 
+UNICODE_STRING DevName;
+UNICODE_STRING Win32Name;
+PDEVICE_OBJECT DeviceObj;
+
 NTSTATUS ioctlCreateClose(PDEVICE_OBJECT pDeviceObject, PIRP irp)
 {
 	UNREFERENCED_PARAMETER(pDeviceObject);

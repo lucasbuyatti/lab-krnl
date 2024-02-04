@@ -4,15 +4,15 @@
 
 #include "driver.h"
 
-static UNICODE_STRING DevName;
-static UNICODE_STRING Win32Name;
-static PDEVICE_OBJECT DeviceObj = NULL;
+extern UNICODE_STRING DevName;
+extern UNICODE_STRING Win32Name;
+extern PDEVICE_OBJECT DeviceObj;
 
-static PVOID g_SourceProcess = NULL;
-static PVOID g_TargetProcess = NULL;
-static ULONG g_UniqueProcessId = 0;
-static PUCHAR g_ImageFileName = NULL;
-static PVOID g_ImageBaseAddress = NULL;
-static PVOID g_DllBase = NULL;
+extern PVOID g_SourceProcess;
+extern PVOID g_TargetProcess;
+extern ULONG g_UniqueProcessId;
+extern PUCHAR g_ImageFileName;
+extern PVOID g_ImageBaseAddress;
+extern PVOID g_DllBase;
 
 #endif // !GLOBALS_H

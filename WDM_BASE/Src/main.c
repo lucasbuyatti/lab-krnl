@@ -4,6 +4,7 @@
 DRIVER_INITIALIZE DriverEntry;
 DRIVER_UNLOAD UnloadDriver;
 
+\
 NTSTATUS
 DriverEntry(
 	PDRIVER_OBJECT DriverObject,
@@ -16,12 +17,10 @@ DriverEntry(
 
 	dbg("[+] Driver\n");
 
-	processInfo("Notepad.exe");
-	dbg("Source _EPROCESS Pointer: %p\n", g_SourceProcess);
-	dbg("Target _EPROCESS Pointer: %p\n", g_TargetProcess);
-	//dbg("UniqueProcessId: %u\n", g_UniqueProcessId);
-	//dbg("ImageFileName: %s\n", g_ImageFileName);
-	//dbg("ImageBaseAddress: 0x%p\n", g_ImageBaseAddress);
+	ProcessInfoByName("Notepad.exe");
+	dbg("Source Target: 0x%p\n", g_SourceProcess);
+
+
 
 	/*createDevice(DriverObject, status);
 	symLink(status);
