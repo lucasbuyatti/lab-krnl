@@ -124,11 +124,28 @@ PVOID GetDllBase(PEPROCESS process, CONST PCHAR dllname)
 {
 	UNREFERENCED_PARAMETER(dllname);
 
-	PPEB peb = (PPEB)((ULONG_PTR)process + 0x550);
-	dbg("Miembro Peb: 0x%p\n", peb);
+	PPEB peb = (PPEB)((ULONG_PTR)process + 0x550); 
+	dbg("Estructura Peb: 0x%p\n", peb);
 
-	PPEB_LDR_DATA LdrData = (PPEB_LDR_DATA)((ULONG_PTR)peb + 0x018 - 0x550);
-	dbg("LdrData: 0x%p\n", LdrData); 
+	KAPC_STATE apc;
+	PPEB_LDR_DATA Ldr = NULL;
+	UCHAR initialized = 0;
+	__try
+	{
+		KeStackAttachProcess((PRKPROCESS)process, &apc);
+		
+		Ldr = (PPEB_LDR_DATA)((ULONG_PTR)&(peb->Ldr) - 0x550);
+		initialized = Ldr->Initialized;
+
+	}
+	__except (EXCEPTION_EXECUTE_HANDLER)
+	{
+		dbg("EXCEPTION: 0x%X\n", GetExceptionCode());
+	}
+	
+	KeUnstackDetachProcess(&apc);
+	dbg("Ldr: 0x%p\n", Ldr);
+	dbg("Initialized: 0x%X\n", initialized);
 
 	return NULL;
 }

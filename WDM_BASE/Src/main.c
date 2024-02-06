@@ -20,6 +20,7 @@ DriverEntry(
 	ProcessInfoByName("Notepad.exe");
 	dbg("Source process: 0x%p\n", g_SourceProcess);
 	dbg("Target Process: 0x%p\n", g_TargetProcess);
+	dbg("ImageBaseAddress: 0x%p\n", g_ImageBaseAddress);
 
 	/*createDevice(DriverObject, status);
 	symLink(status);
