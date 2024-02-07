@@ -159,3 +159,5 @@ typedef struct _PEB {
 	ULONG NtGlobalFlag2; //0x7c4
 	ULONGLONG ExtendedFeatureDisableMask; //0x7c8
 }PEB, * PPEB;
+
+
