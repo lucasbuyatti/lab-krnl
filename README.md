@@ -2,6 +2,9 @@
 Configurar Proyecto de Inicio >> Selección Actual
 
 # Conocimiento Adquirido
+Windbg
+Display Bytes EPROCESS PTR + PEB OFFSET
+
 db FFFF838E28C840C0+0x550
 | Dirección de Memoria | Contenido en Bytes | Contenido interpretado (hexadecimal a decimal, decimal a ASCII) |
 |-----------------------|---------------------|----------------------------------------------------------------|
