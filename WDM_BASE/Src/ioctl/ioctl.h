@@ -2,8 +2,7 @@
 #ifndef IOCTL_H
 #define IOCTL_H
 
-#include "driver.h"
-#include "globals.h"
+#include "..\global\globals.h"
 
 #define NT_DEVICE_NAME L"\\Device\\IOCTL"
 #define DOS_DEVICE_NAME L"\\DosDevices\\IOCTLtest"

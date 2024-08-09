@@ -24,33 +24,30 @@
     </Inf>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Src\ioctl.c">
+    <ClCompile Include="Src\ioctl\ioctl.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Src\main.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Src\process.c">
+    <ClCompile Include="Src\proc\process.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Src\process.h">
+    <ClInclude Include="Src\proc\process.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Src\driver.h">
+    <ClInclude Include="Src\global\globals.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Src\globals.h">
+    <ClInclude Include="Src\ioctl\ioctl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Src\ioctl.h">
+    <ClInclude Include="Src\global\debug.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Src\debug.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\struct.h">
+    <ClInclude Include="Src\global\struct.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

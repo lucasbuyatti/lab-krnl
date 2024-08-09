@@ -2,7 +2,9 @@
 #ifndef GLOBALS_H
 #define	GLOBALS_H
 
-#include "driver.h"
+#include <ntifs.h>
+#include <ntddk.h>
+#include "debug.h"
 
 extern UNICODE_STRING DevName;
 extern UNICODE_STRING Win32Name;

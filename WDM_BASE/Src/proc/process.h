@@ -2,9 +2,8 @@
 #ifndef PROCESS_H
 #define PROCESS_H
 
-#include "driver.h"
-#include "globals.h"
-#include "struct.h"
+#include "..\global\globals.h"
+#include "..\global\struct.h"
 
 ULONG GetUniqueProcessId(
 	PEPROCESS process

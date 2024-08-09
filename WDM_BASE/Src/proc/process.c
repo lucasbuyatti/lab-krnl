@@ -1,11 +1,17 @@
 ﻿#include "process.h"
 
-PVOID g_SourceProcess = NULL;
-PVOID g_TargetProcess = NULL;
-ULONG g_UniqueProcessId = 0;
-PUCHAR g_ImageFileName = NULL;
-PVOID g_ImageBaseAddress = NULL;
-PVOID g_DllBase = NULL;
+
+struct process {
+	// En realidad esto no es necesario ponerlo aca
+	PVOID sourceProcess;
+	PVOID targetProcess;
+	//
+	ULONG uniqueProcessId;
+	PUCHAR imageFileName;
+	PVOID imageBaseAddress;
+	PVOID dllBase;
+}proc;
+
 
 VOID ProcessInfoByName(CONST PCHAR filename)
 {
@@ -15,7 +21,7 @@ VOID ProcessInfoByName(CONST PCHAR filename)
 	g_SourceProcess = currProcess;
 
 	/* Obtengo el puntero al miembro ActiveProcessLinks de la estructura _EPROCESS */
-	PLIST_ENTRY aplList = (PLIST_ENTRY)((ULONG_PTR)currProcess + 0x448);
+	PLIST_ENTRY aplList = (PLIST_ENTRY)((ULONG_PTR)currProcess + 0x1d8);
 	PLIST_ENTRY entry;
 
 	entry = aplList;
@@ -23,17 +29,20 @@ VOID ProcessInfoByName(CONST PCHAR filename)
 	{
 		/* Obtengo el _EPROCESS de los demas procesos */
 		/* Resto 0x448 (ActiveProcessLinks) para obtenerlo */
-		PEPROCESS processes = (PEPROCESS)((ULONG_PTR)entry - 0x448);
+		PEPROCESS processes = (PEPROCESS)((ULONG_PTR)entry - 0x1d8);
 
-		g_ImageFileName = GetImageFileName(processes);
+		proc.imageFileName = GetImageFileName(processes); // Creo que falta algo (Manejo de memoria o de resultado ????????????)
 
 		if (strcmp((CONST PCHAR)g_ImageFileName, filename) == 0)
 		{
+			// Aca llamo a todas las funciones
+
 			g_TargetProcess = processes;
 			g_UniqueProcessId = GetUniqueProcessId(processes);
 			g_ImageFileName = g_ImageFileName;
 			g_ImageBaseAddress = GetImageBaseAddress(processes);
-			GetDllBase(processes, NULL);
+
+			// GetDllBase(processes, NULL);
 			return;
 		}
 
@@ -47,7 +56,7 @@ VOID ProcessInfoByName(CONST PCHAR filename)
 ULONG GetUniqueProcessId(PEPROCESS process)
 {
 	/* Obtengo el miembro UniqueProcessId */
-	ULONG_PTR pid = (ULONG_PTR)((ULONG_PTR)process + 0x440);
+	ULONG_PTR pid = (ULONG_PTR)((ULONG_PTR)process + 0x1d0);
 
 	if (!pid)
 		return 0;
@@ -62,7 +71,7 @@ ULONG GetUniqueProcessId(PEPROCESS process)
 PUCHAR GetImageFileName(PEPROCESS process)
 {
 	/* Obtengo el miembro ImageFileName */
-	PUCHAR ImageFileName = (PUCHAR)((ULONG_PTR)process + 0x5A8);
+	PUCHAR ImageFileName = (PUCHAR)((ULONG_PTR)process + 0x338);
 
 	if (!ImageFileName)
 		return NULL;
@@ -86,12 +95,12 @@ PUCHAR GetImageFileName(PEPROCESS process)
 PVOID GetImageBaseAddress(PEPROCESS process)
 {
 	/* Obtengo el puntero a _PEB */
-	PPEB peb = *(PPEB*)((ULONG_PTR)process + 0x550);
+	PPEB peb = *(PPEB*)((ULONG_PTR)process + 0x2e0);
 	if (!peb)
 		return NULL;
 
 	/* Obtengo el puntero del miembro ImageBaseAddress */
-	PVOID ptrImageBaseAddress = (PVOID)((ULONG_PTR)peb + 0x10);
+	PVOID ptrImageBaseAddress = (PVOID)((ULONG_PTR)peb + 0x010);
 	if (!ptrImageBaseAddress)
 		return NULL;
 
@@ -103,7 +112,7 @@ PVOID GetImageBaseAddress(PEPROCESS process)
 		KeStackAttachProcess((PRKPROCESS)process, &apcState);
 
 		imageBaseAddress = *(PVOID*)ptrImageBaseAddress;
-		ProbeForRead((PVOID)imageBaseAddress, sizeof(PVOID), sizeof(ULONG));
+		ProbeForRead((PVOID)imageBaseAddress, sizeof(PVOID), sizeof(ULONG)); // solo chequea el buffer del usuario
 
 		if (!imageBaseAddress)
 			return NULL;
@@ -120,6 +129,7 @@ PVOID GetImageBaseAddress(PEPROCESS process)
 }
 
 /* ????? 🤯🤯🤯🤯 ????? */
+// No funka, problema para otra hora, dia, mes o año. Incluso para otra persona :p
 PVOID GetDllBase(PEPROCESS process, CONST PCHAR dllname)
 {
 	UNREFERENCED_PARAMETER(dllname);

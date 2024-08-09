@@ -69,15 +69,15 @@
     <DebuggerFlavor>DbgengKernelDebugger</DebuggerFlavor>
     <Inf2CatUseLocalTime>true</Inf2CatUseLocalTime>
     <EnableInf2cat>true</EnableInf2cat>
-    <OutDir>E:/Shared/0/</OutDir>
-    <IntDir>E:/Shared/kernel/sys</IntDir>
+    <OutDir>Y:\VM\CarpetasCompartidas\Kernel</OutDir>
+    <IntDir>Y:\VM\CarpetasCompartidas\Intermedio</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <DebuggerFlavor>DbgengKernelDebugger</DebuggerFlavor>
     <Inf2CatUseLocalTime>true</Inf2CatUseLocalTime>
     <EnableInf2cat>true</EnableInf2cat>
-    <OutDir>E:/Shared/0/</OutDir>
-    <IntDir>E:/Shared/kernel/sys</IntDir>
+    <OutDir>Y:\VM\CarpetasCompartidas\Kernel</OutDir>
+    <IntDir>Y:\VM\CarpetasCompartidas\Intermedio</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <DebuggerFlavor>DbgengKernelDebugger</DebuggerFlavor>
@@ -122,17 +122,16 @@
     <FilesToPackage Include="$(TargetPath)" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Src\ioctl.c" />
+    <ClCompile Include="Src\ioctl\ioctl.c" />
     <ClCompile Include="Src\main.c" />
-    <ClCompile Include="Src\process.c" />
+    <ClCompile Include="Src\proc\process.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Src\debug.h" />
-    <ClInclude Include="Src\globals.h" />
-    <ClInclude Include="Src\driver.h" />
-    <ClInclude Include="Src\ioctl.h" />
-    <ClInclude Include="Src\process.h" />
-    <ClInclude Include="Src\struct.h" />
+    <ClInclude Include="Src\global\debug.h" />
+    <ClInclude Include="Src\global\globals.h" />
+    <ClInclude Include="Src\ioctl\ioctl.h" />
+    <ClInclude Include="Src\proc\process.h" />
+    <ClInclude Include="Src\global\struct.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
