@@ -1,6 +1,6 @@
 #pragma once
 #pragma warning (disable: 4201)
-#include "driver.h"
+#include "globals.h"
 
 typedef struct _PEB_LDR_DATA
 {

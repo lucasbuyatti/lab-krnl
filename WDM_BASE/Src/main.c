@@ -1,4 +1,4 @@
-#include "global/driver.h"
+#include "global/globals.h"
 #include "proc\process.h"
 
 DRIVER_INITIALIZE DriverEntry;

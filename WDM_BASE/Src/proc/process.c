@@ -18,7 +18,7 @@ VOID ProcessInfoByName(CONST PCHAR filename)
 	PAGED_CODE();
 	/* Obtengo el puntero a _EPROCESS */
 	PEPROCESS currProcess = PsGetCurrentProcess();
-	g_SourceProcess = currProcess;
+	proc.sourceProcess = currProcess;
 
 	/* Obtengo el puntero al miembro ActiveProcessLinks de la estructura _EPROCESS */
 	PLIST_ENTRY aplList = (PLIST_ENTRY)((ULONG_PTR)currProcess + 0x1d8);
@@ -33,20 +33,20 @@ VOID ProcessInfoByName(CONST PCHAR filename)
 
 		proc.imageFileName = GetImageFileName(processes); // Creo que falta algo (Manejo de memoria o de resultado ????????????)
 
-		if (strcmp((CONST PCHAR)g_ImageFileName, filename) == 0)
+		if (strcmp((CONST PCHAR)proc.imageFileName, filename) == 0)
 		{
 			// Aca llamo a todas las funciones
 
-			g_TargetProcess = processes;
-			g_UniqueProcessId = GetUniqueProcessId(processes);
-			g_ImageFileName = g_ImageFileName;
-			g_ImageBaseAddress = GetImageBaseAddress(processes);
+			proc.targetProcess = processes;
+			proc.uniqueProcessId = GetUniqueProcessId(processes);
+			proc.imageFileName = proc.imageFileName;
+			proc.imageBaseAddress = GetImageBaseAddress(processes);
 
 			// GetDllBase(processes, NULL);
 			return;
 		}
 
-		ExFreePool(g_ImageFileName);
+		ExFreePool(proc.imageFileName);
 
 		entry = entry->Flink;
 	} while (entry != aplList);
@@ -134,7 +134,7 @@ PVOID GetDllBase(PEPROCESS process, CONST PCHAR dllname)
 {
 	UNREFERENCED_PARAMETER(dllname);
 
-	PPEB peb = *(PPEB*)((ULONG_PTR)process + 0x550); 
+	PPEB peb = *(PPEB*)((ULONG_PTR)process + 0x550); // Hay que actualizarlo
 	dbg("Estructura Peb: 0x%p\n", peb);
 
 	KAPC_STATE apc;
