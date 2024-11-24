@@ -1,7 +1,7 @@
 ﻿#include "process.h"
 
 
-struct process {
+struct process { // Nunca use struct, no se como afectaria al proyecto :d
 	// En realidad esto no es necesario ponerlo aca
 	PVOID sourceProcess;
 	PVOID targetProcess;
