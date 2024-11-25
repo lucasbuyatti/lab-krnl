@@ -119,7 +119,7 @@ NTSTATUS symLink(
 	if (!NT_SUCCESS(status))
 	{
 		dbg("[-] IoCreateSymbolicLink\n");
-		IoDeleteDevice(DeviceObj);
+		IoDeleteDevice(DeviceObj); // Eliminar la referencia de un puntero posiblemente nulo "DeviceObj" (lifetime.1).
 		return status;
 	}
 	dbg("[+] IoCreateSymbolicLink\n");

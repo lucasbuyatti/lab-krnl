@@ -1,18 +1,6 @@
 ﻿#include "process.h"
 
 
-struct process { // Nunca use struct, no se como afectaria al proyecto :d
-	// En realidad esto no es necesario ponerlo aca
-	PVOID sourceProcess;
-	PVOID targetProcess;
-	//
-	ULONG uniqueProcessId;
-	PUCHAR imageFileName;
-	PVOID imageBaseAddress;
-	PVOID dllBase;
-}proc;
-
-
 VOID ProcessInfoByName(CONST PCHAR filename)
 {
 	PAGED_CODE();
@@ -25,6 +13,7 @@ VOID ProcessInfoByName(CONST PCHAR filename)
 	PLIST_ENTRY entry;
 
 	entry = aplList;
+
 	do
 	{
 		/* Obtengo el _EPROCESS de los demas procesos */
@@ -32,6 +21,9 @@ VOID ProcessInfoByName(CONST PCHAR filename)
 		PEPROCESS processes = (PEPROCESS)((ULONG_PTR)entry - 0x1d8);
 
 		proc.imageFileName = GetImageFileName(processes); // Creo que falta algo (Manejo de memoria o de resultado ????????????)
+
+		if (proc.imageFileName == NULL)
+			return;
 
 		if (strcmp((CONST PCHAR)proc.imageFileName, filename) == 0)
 		{
@@ -46,7 +38,12 @@ VOID ProcessInfoByName(CONST PCHAR filename)
 			return;
 		}
 
+
+
 		ExFreePool(proc.imageFileName);
+
+		if (entry == NULL)
+			return;
 
 		entry = entry->Flink;
 	} while (entry != aplList);
@@ -80,7 +77,7 @@ PUCHAR GetImageFileName(PEPROCESS process)
 	SIZE_T imageNameLenght = strlen((CONST PCHAR)ImageFileName);
 
 	/* Asigno un bloque de memoria del tamaño especificado, con el tipo y la proteccion especificados */
-	PUCHAR imageName = (PUCHAR)ExAllocatePool2(POOL_FLAG_NON_PAGED_EXECUTE, imageNameLenght + 1, 'aa');
+	PUCHAR imageName = (PUCHAR)ExAllocatePool2(POOL_FLAG_NON_PAGED_EXECUTE, imageNameLenght + 1, 'aa'); // Anotación de error: Warning: Allocating executable POOL_FLAGS memory.
 
 	if (!imageName)
 		return NULL;
@@ -108,6 +105,10 @@ PVOID GetImageBaseAddress(PEPROCESS process)
 	PVOID imageBaseAddress = NULL;
 	__try
 	{
+
+		if (process == NULL)
+			return NULL;
+
 		/* Obtengo el miembro ImageBaseAddress */
 		KeStackAttachProcess((PRKPROCESS)process, &apcState);
 
@@ -132,21 +133,22 @@ PVOID GetImageBaseAddress(PEPROCESS process)
 // No funka, problema para otra hora, dia, mes o año. Incluso para otra persona :p
 PVOID GetDllBase(PEPROCESS process, CONST PCHAR dllname)
 {
+	UNREFERENCED_PARAMETER(process);
 	UNREFERENCED_PARAMETER(dllname);
 
-	PPEB peb = *(PPEB*)((ULONG_PTR)process + 0x550); // Hay que actualizarlo
-	dbg("Estructura Peb: 0x%p\n", peb);
+	//PPEB peb = *(PPEB*)((ULONG_PTR)process + 0x550); // Hay que actualizarlo
+	//dbg("Estructura Peb: 0x%p\n", peb);
 
-	KAPC_STATE apc;
-	__try
-	{
-		KeStackAttachProcess(process, &apc);
-		dbg("SsHandle 0x%p\n", peb->Ldr->InMemoryOrderModuleList);
-	}
-	__except (EXCEPTION_EXECUTE_HANDLER)
-	{
-		dbg("EXCEPTION: 0x%X\n", GetExceptionCode());
-	}
-	KeUnstackDetachProcess(&apc);
+	//KAPC_STATE apc;
+	//__try
+	//{
+	//	KeStackAttachProcess(process, &apc);
+	//	dbg("SsHandle 0x%p\n", peb->Ldr->InMemoryOrderModuleList);
+	//}
+	//__except (EXCEPTION_EXECUTE_HANDLER)
+	//{
+	//	dbg("EXCEPTION: 0x%X\n", GetExceptionCode());
+	//}
+	//KeUnstackDetachProcess(&apc);
 	return NULL;
 }

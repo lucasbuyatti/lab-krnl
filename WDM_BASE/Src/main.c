@@ -1,8 +1,12 @@
-#include "global/globals.h"
+#include "global\globals.h"
 #include "proc\process.h"
 
 DRIVER_INITIALIZE DriverEntry;
 DRIVER_UNLOAD UnloadDriver;
+
+UNICODE_STRING DevName;
+UNICODE_STRING Win32Name;
+PDEVICE_OBJECT DeviceObj;
 
 NTSTATUS
 DriverEntry(
@@ -16,10 +20,11 @@ DriverEntry(
 
 	dbg("[+] Driver\n");
 
-	//ProcessInfoByName("Notepad.exe");
-	//dbg("Source process: 0x%p\n", g_SourceProcess);
-	//dbg("Target Process: 0x%p\n", g_TargetProcess);
-	//dbg("ImageBaseAddress: 0x%p\n", g_ImageBaseAddress);
+	ProcessInfoByName("Notepad.exe");
+	dbg("Source process: 0x%p\n", proc.sourceProcess);
+	dbg("Target Process: 0x%p\n", proc.targetProcess);
+	dbg("ImageBaseAddress: 0x%p\n", proc.imageBaseAddress);
+	dbg("UniqueProcessId: %d\n", proc.uniqueProcessId);
 	//BreakPoint;
 
 	/*createDevice(DriverObject, status);
