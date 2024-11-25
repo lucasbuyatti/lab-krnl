@@ -10,11 +10,15 @@ extern UNICODE_STRING DevName;
 extern UNICODE_STRING Win32Name;
 extern PDEVICE_OBJECT DeviceObj;
 
-extern PVOID g_SourceProcess;
-extern PVOID g_TargetProcess;
-extern ULONG g_UniqueProcessId;
-extern PUCHAR g_ImageFileName;
-extern PVOID g_ImageBaseAddress;
-extern PVOID g_DllBase;
+struct process { // Nunca use struct, no se como afectaria al proyecto :d
+	// En realidad esto no es necesario ponerlo aca
+	PVOID sourceProcess;
+	PVOID targetProcess;
+	//
+	ULONG uniqueProcessId;
+	PUCHAR imageFileName;
+	PVOID imageBaseAddress;
+	PVOID dllBase;
+}proc;
 
 #endif // !GLOBALS_H

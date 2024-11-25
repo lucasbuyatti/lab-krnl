@@ -16,6 +16,11 @@ DriverEntry(
 
 	dbg("[+] Driver\n");
 
+
+
+
+
+
 	//ProcessInfoByName("Notepad.exe");
 	//dbg("Source process: 0x%p\n", g_SourceProcess);
 	//dbg("Target Process: 0x%p\n", g_TargetProcess);
