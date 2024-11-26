@@ -128,18 +128,18 @@
     <FilesToPackage Include="$(TargetPath)" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Src\ioctl\ioctl.c" />
-    <ClCompile Include="Src\main.c" />
-    <ClCompile Include="Src\proc\process.c" />
-    <ClCompile Include="Src\test\test.c" />
+    <ClCompile Include="src\ioctl\ioctl.c" />
+    <ClCompile Include="src\main.c" />
+    <ClCompile Include="src\proc\process.c" />
+    <ClCompile Include="src\test\test.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Src\global\debug.h" />
-    <ClInclude Include="Src\global\globals.h" />
-    <ClInclude Include="Src\ioctl\ioctl.h" />
-    <ClInclude Include="Src\proc\process.h" />
-    <ClInclude Include="Src\global\struct.h" />
-    <ClInclude Include="Src\test\test.h" />
+    <ClInclude Include="src\global\debug.h" />
+    <ClInclude Include="src\global\globals.h" />
+    <ClInclude Include="src\ioctl\ioctl.h" />
+    <ClInclude Include="src\proc\process.h" />
+    <ClInclude Include="src\global\struct.h" />
+    <ClInclude Include="src\test\test.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
