@@ -26,9 +26,14 @@ PUCHAR GetImageFileName(
 PVOID GetImageBaseAddress(
 	PEPROCESS process
 );
-PVOID GetDllBase(
+PVOID GetModuleBase(
 	PEPROCESS process,
-	CONST PCHAR dllname
+	CONST PCHAR modname
+);
+
+PVOID GetKernelModuleBase(
+	PEPROCESS process, 
+	CONST PCHAR modname
 );
 
 VOID ProcessInfoByName(

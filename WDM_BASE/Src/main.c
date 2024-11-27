@@ -1,12 +1,23 @@
 #include "global\globals.h"
 #include "proc\process.h"
+#include "ioctl\ioctl.h"
 
 DRIVER_INITIALIZE DriverEntry;
 DRIVER_UNLOAD UnloadDriver;
 
-UNICODE_STRING DevName;
-UNICODE_STRING Win32Name;
-PDEVICE_OBJECT DeviceObj;
+VOID loadProcess() 
+{
+	ProcessInfoByName("Notepad.exe");
+	//dbg("Target Process EPROCESS: 0x%p\n", proc.targetProcess);
+	//dbg("Source process EPROCESS: 0x%p\n", proc.sourceProcess);
+	//dbg("ImageBaseAddress: 0x%p\n", proc.imageBaseAddress);
+	//dbg("UniqueProcessId: %d\n", proc.uniqueProcessId);
+}
+
+VOID loadTest()
+{
+
+}
 
 NTSTATUS
 DriverEntry(
@@ -20,11 +31,9 @@ DriverEntry(
 
 	dbg("[+] Driver\n");
 
-	ProcessInfoByName("Notepad.exe");
-	dbg("Source process: 0x%p\n", proc.sourceProcess);
-	dbg("Target Process: 0x%p\n", proc.targetProcess);
-	dbg("ImageBaseAddress: 0x%p\n", proc.imageBaseAddress);
-	dbg("UniqueProcessId: %d\n", proc.uniqueProcessId);
+	loadProcess();
+
+
 	//BreakPoint;
 
 	/*createDevice(DriverObject, status);
@@ -48,7 +57,7 @@ UnloadDriver(
 {
 	UNREFERENCED_PARAMETER(DriverObject);
 
-	PAGED_CODE();
+	// PAGED_CODE();
 
 	//IoDeleteSymbolicLink(&Win32Name);
 	//dbg("[-] SymbolicLink\n");

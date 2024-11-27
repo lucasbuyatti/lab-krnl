@@ -1,9 +1,9 @@
-﻿#include "process.h"
-
+﻿#pragma warning (disable : 4047 4189)
+#include "process.h"
 
 VOID ProcessInfoByName(CONST PCHAR filename)
 {
-	PAGED_CODE();
+	// PAGED_CODE();
 	/* Obtengo el puntero a _EPROCESS */
 	PEPROCESS currProcess = PsGetCurrentProcess();
 	proc.sourceProcess = currProcess;
@@ -30,11 +30,12 @@ VOID ProcessInfoByName(CONST PCHAR filename)
 			// Aca llamo a todas las funciones
 
 			proc.targetProcess = processes;
+			dbg("Target Process: 0x%p\n", proc.targetProcess);
 			proc.uniqueProcessId = GetUniqueProcessId(processes);
 			proc.imageFileName = proc.imageFileName;
 			proc.imageBaseAddress = GetImageBaseAddress(processes);
-
-			// GetDllBase(processes, NULL);
+			dbg("ImageBaseAddress: 0x%p\n", proc.imageBaseAddress);
+			GetModuleBase(processes, NULL);
 			return;
 		}
 
@@ -77,7 +78,7 @@ PUCHAR GetImageFileName(PEPROCESS process)
 	SIZE_T imageNameLenght = strlen((CONST PCHAR)ImageFileName);
 
 	/* Asigno un bloque de memoria del tamaño especificado, con el tipo y la proteccion especificados */
-	PUCHAR imageName = (PUCHAR)ExAllocatePool2(POOL_FLAG_NON_PAGED_EXECUTE, imageNameLenght + 1, 'aa'); // Anotación de error: Warning: Allocating executable POOL_FLAGS memory.
+	PUCHAR imageName = (PUCHAR)ExAllocatePool2(POOL_FLAG_NON_PAGED, imageNameLenght + 1, 'aa'); // Anotación de error: Warning: Allocating executable POOL_FLAGS memory.
 
 	if (!imageName)
 		return NULL;
@@ -121,6 +122,7 @@ PVOID GetImageBaseAddress(PEPROCESS process)
 	__except (EXCEPTION_EXECUTE_HANDLER)
 	{
 		/* Nada */
+		KeUnstackDetachProcess(&apcState);
 	}
 
 	/* Ponerlo dentro del __try causa BSOD */
@@ -131,24 +133,96 @@ PVOID GetImageBaseAddress(PEPROCESS process)
 
 /* ????? 🤯🤯🤯🤯 ????? */
 // No funka, problema para otra hora, dia, mes o año. Incluso para otra persona :p
-PVOID GetDllBase(PEPROCESS process, CONST PCHAR dllname)
+PVOID GetModuleBase(PEPROCESS process, CONST PCHAR modname)
+{
+	//UNREFERENCED_PARAMETER(process);
+	UNREFERENCED_PARAMETER(modname);
+
+	KAPC_STATE apc;
+
+	if (!process)
+		return NULL;
+
+	__try
+	{
+		KeStackAttachProcess(process, &apc);
+
+		PPEB peb = *(PPEB*)((ULONG_PTR)process + 0x2e0);
+		if (!peb)
+		{
+			dbg("PEB es NULL\n");
+			return NULL;
+		}
+		dbg("PEB: 0x%p\n", peb);
+
+		PPEB_LDR_DATA ldr = peb->Ldr;
+		if (!ldr)
+		{
+			dbg("LDR es NULL\n");
+			return NULL;
+		}
+		dbg("ldr: 0x%p\n", ldr);
+
+#pragma region revisar
+		// No se si hace falta separarlos (Misma direccion de memoria)
+		PLIST_ENTRY ldrEntry = &ldr->InLoadOrderModuleList->Flink;
+		if (!ldrEntry)
+		{
+			dbg("ldrEntry es NULL\n");
+			return NULL;
+		}
+		dbg("ldrEntry: 0x%p\n", ldrEntry);
+
+
+#pragma endregion
+		
+
+		PLIST_ENTRY currEntry = ldrEntry;
+		do
+		{
+			PLDR_DATA_TABLE_ENTRY ldrTableEntry = CONTAINING_RECORD(currEntry, LDR_DATA_TABLE_ENTRY, InLoadOrderLinks);
+			//BreakPoint;
+            if (!ldrTableEntry)
+            {
+				dbg("ldrTableEntry es NULL\n");
+                return NULL;
+            }
+
+            dbg("ldrTableEntry: 0x%p\n", ldrTableEntry);
+			dbg("dllBase: 0x%p\n", ldrTableEntry->DllBase);
+			dbg("---\n");
+
+			currEntry = currEntry->Flink;
+
+		} while (currEntry != ldrEntry); 
+
+
+		//do
+		//{
+		//	PLDR_DATA_TABLE_ENTRY ldrEntry = CONTAINING_RECORD(modList, LDR_DATA_TABLE_ENTRY, InLoadOrderLinks); // AHORA MISMO EN LA ESTRUCTURA DE PLDR_DATA
+
+		//	dbg("?? : 0x%p\n", ldrEntry->DllBase);
+
+		//	entry = entry->Flink;
+
+		//} while (entry != modList);
+
+
+
+	}
+	__except (EXCEPTION_EXECUTE_HANDLER)
+	{
+		dbg("EXCEPTION: 0x%X\n", GetExceptionCode());
+		// KeUnstackDetachProcess(&apc);
+	}
+
+	KeUnstackDetachProcess(&apc);
+	return NULL;
+}
+
+PVOID GetKernelModuleBase(PEPROCESS process, CONST PCHAR modname)
 {
 	UNREFERENCED_PARAMETER(process);
-	UNREFERENCED_PARAMETER(dllname);
-
-	//PPEB peb = *(PPEB*)((ULONG_PTR)process + 0x550); // Hay que actualizarlo
-	//dbg("Estructura Peb: 0x%p\n", peb);
-
-	//KAPC_STATE apc;
-	//__try
-	//{
-	//	KeStackAttachProcess(process, &apc);
-	//	dbg("SsHandle 0x%p\n", peb->Ldr->InMemoryOrderModuleList);
-	//}
-	//__except (EXCEPTION_EXECUTE_HANDLER)
-	//{
-	//	dbg("EXCEPTION: 0x%X\n", GetExceptionCode());
-	//}
-	//KeUnstackDetachProcess(&apc);
+	UNREFERENCED_PARAMETER(modname);
 	return NULL;
 }

@@ -2,162 +2,231 @@
 #pragma warning (disable: 4201)
 #include "globals.h"
 
-typedef struct _PEB_LDR_DATA
-{
-	ULONG Length;                                                           //0x0
-	UCHAR Initialized;                                                      //0x4
-	VOID* SsHandle;                                                         //0x8
-	struct _LIST_ENTRY InLoadOrderModuleList;                               //0x10
-	struct _LIST_ENTRY InMemoryOrderModuleList;                             //0x20
-	struct _LIST_ENTRY InInitializationOrderModuleList;                     //0x30
-	VOID* EntryInProgress;                                                  //0x40
-	UCHAR ShutdownInProgress;                                               //0x48
-	VOID* ShutdownThreadId;                                                 //0x50
-}PEB_LDR_DATA, * PPEB_LDR_DATA;
+typedef struct _LDR_DATA_TABLE_ENTRY {
+    PLIST_ENTRY InLoadOrderLinks;               // 0x000
+    PLIST_ENTRY InMemoryOrderLinks;             // 0x010
+    PLIST_ENTRY InInitializationOrderLinks;     // 0x020
+    PVOID DllBase;                              // 0x030
+    PVOID EntryPoint;                           // 0x038
+    ULONG SizeOfImage;                          // 0x040
+    PUNICODE_STRING FullDllName;                // 0x048
+    PUNICODE_STRING BaseDllName;                // 0x058
+    UCHAR FlagGroup[4];                         // 0x068 (1 byte each)
+    union {
+        ULONG Flags;                           // 0x068
+        struct {
+            ULONG PackagedBinary : 1;
+            ULONG MarkedForRemoval : 1;
+            ULONG ImageDll : 1;
+            ULONG LoadNotificationsSent : 1;
+            ULONG TelemetryEntryProcessed : 1;
+            ULONG ProcessStaticImport : 1;
+            ULONG InLegacyLists : 1;
+            ULONG InIndexes : 1;
+            ULONG ShimDll : 1;
+            ULONG InExceptionTable : 1;
+            ULONG VerifierProvider : 1;
+            ULONG ShimEngineCalloutSent : 1;
+            ULONG LoadInProgress : 1;
+            ULONG LoadConfigProcessed : 1;
+            ULONG EntryProcessed : 1;
+            ULONG ProtectDelayLoad : 1;
+            ULONG AuxIatCopyPrivate : 1;
+            ULONG ReservedFlags3 : 1;
+            ULONG DontCallForThreads : 1;
+            ULONG ProcessAttachCalled : 1;
+            ULONG ProcessAttachFailed : 1;
+            ULONG ScpInExceptionTable : 1;
+            ULONG CorImage : 1;
+            ULONG DontRelocate : 1;
+            ULONG CorILOnly : 1;
+            ULONG ChpeImage : 1;
+            ULONG ChpeEmulatorImage : 1;
+            ULONG ReservedFlags5 : 2;
+            ULONG Redirected : 1;
+            ULONG ReservedFlags6 : 2;
+            ULONG CompatDatabaseProcessed : 1;
+        };
+    };
+    USHORT ObsoleteLoadCount;                   // 0x06c
+    USHORT TlsIndex;                            // 0x06e
+    PLIST_ENTRY HashLinks;                      // 0x070
+    ULONG TimeDateStamp;                        // 0x080
+    struct PACTIVATION_CONTEXT* EntryPointActivationContext;  // 0x088
+    PVOID Lock;                                 // 0x090
+    struct _LDR_DDAG_NODE* DdagNode;                   // 0x098
+    PLIST_ENTRY NodeModuleLink;                 // 0x0a0
+    struct _LDRP_LOAD_CONTEXT* LoadContext;            // 0x0b0
+    PVOID ParentDllBase;                        // 0x0b8
+    PVOID SwitchBackContext;                    // 0x0c0
+    struct _RTL_BALANCED_NODE BaseAddressIndexNode;    // 0x0c8
+    struct _RTL_BALANCED_NODE MappingInfoIndexNode;    // 0x0e0
+    ULONG64 OriginalBase;                       // 0x0f8
+    LARGE_INTEGER LoadTime;                     // 0x100
+    ULONG BaseNameHashValue;                    // 0x108
+    struct _LDR_DLL_LOAD_REASON* LoadReason;            // 0x10c
+    ULONG ImplicitPathOptions;                  // 0x110
+    ULONG ReferenceCount;                       // 0x114
+    ULONG DependentLoadFlags;                   // 0x118
+    UCHAR SigningLevel;                         // 0x11c
+    ULONG CheckSum;                             // 0x120
+    PVOID ActivePatchImageBase;                 // 0x128
+    struct _LDR_HOT_PATCH_STATE* HotPatchState;         // 0x130
+} LDR_DATA_TABLE_ENTRY, * PLDR_DATA_TABLE_ENTRY;
 
-//0x7d0 bytes (sizeof)
+typedef struct _PEB_LDR_DATA {
+    ULONG Length;
+    UCHAR Initialized;
+    PVOID SsHandle;
+    PLIST_ENTRY InLoadOrderModuleList;
+    PLIST_ENTRY InMemoryOrderModuleList;
+    PLIST_ENTRY InInitializationOrderModuleList;
+    PVOID EntryInProgress;
+    UCHAR ShutdownInProgress;
+    PVOID ShutdownThreadId;
+} PEB_LDR_DATA, * PPEB_LDR_DATA;
+
 typedef struct _PEB {
-	UCHAR InheritedAddressSpace; //0x0
-	UCHAR ReadImageFileExecOptions; //0x1
-	UCHAR BeingDebugged; //0x2
-	union {
-		UCHAR BitField; //0x3
-		struct {
-			UCHAR ImageUsesLargePages : 1; //0x3
-			UCHAR IsProtectedProcess : 1; //0x3
-			UCHAR IsImageDynamicallyRelocated : 1; //0x3
-			UCHAR SkipPatchingUser32Forwarders : 1; //0x3
-			UCHAR IsPackagedProcess : 1; //0x3
-			UCHAR IsAppContainer : 1; //0x3
-			UCHAR IsProtectedProcessLight : 1; //0x3
-			UCHAR IsLongPathAwareProcess : 1; //0x3
-		};
-	};
-	UCHAR Padding0[4]; //0x4
-	VOID* Mutant; //0x8
-	VOID* ImageBaseAddress; //0x10
-	struct _PEB_LDR_DATA* Ldr; //0x18
-	struct _RTL_USER_PROCESS_PARAMETERS* ProcessParameters; //0x20
-	VOID* SubSystemData; //0x28
-	VOID* ProcessHeap; //0x30
-	struct _RTL_CRITICAL_SECTION* FastPebLock; //0x38
-	union _SLIST_HEADER* volatile AtlThunkSListPtr; //0x40
-	VOID* IFEOKey; //0x48
-	union {
-		ULONG CrossProcessFlags; //0x50
-		struct {
-			ULONG ProcessInJob : 1; //0x50
-			ULONG ProcessInitializing : 1; //0x50
-			ULONG ProcessUsingVEH : 1; //0x50
-			ULONG ProcessUsingVCH : 1; //0x50
-			ULONG ProcessUsingFTH : 1; //0x50
-			ULONG ProcessPreviouslyThrottled : 1; //0x50
-			ULONG ProcessCurrentlyThrottled : 1; //0x50
-			ULONG ProcessImagesHotPatched : 1; //0x50
-			ULONG ReservedBits0 : 24; //0x50
-		};
-	};
-	UCHAR Padding1[4]; //0x54
-	union {
-		VOID* KernelCallbackTable; //0x58
-		VOID* UserSharedInfoPtr; //0x58
-	};
-	ULONG SystemReserved; //0x60
-	ULONG AtlThunkSListPtr32; //0x64
-	VOID* ApiSetMap; //0x68
-	ULONG TlsExpansionCounter; //0x70
-	UCHAR Padding2[4]; //0x74
-	struct _RTL_BITMAP* TlsBitmap; //0x78
-	ULONG TlsBitmapBits[2]; //0x80
-	VOID* ReadOnlySharedMemoryBase; //0x88
-	VOID* SharedData; //0x90
-	VOID** ReadOnlyStaticServerData; //0x98
-	VOID* AnsiCodePageData; //0xa0
-	VOID* OemCodePageData; //0xa8
-	VOID* UnicodeCaseTableData; //0xb0
-	ULONG NumberOfProcessors; //0xb8
-	ULONG NtGlobalFlag; //0xbc
-	union _LARGE_INTEGER CriticalSectionTimeout; //0xc0
-	ULONGLONG HeapSegmentReserve; //0xc8
-	ULONGLONG HeapSegmentCommit; //0xd0
-	ULONGLONG HeapDeCommitTotalFreeThreshold; //0xd8
-	ULONGLONG HeapDeCommitFreeBlockThreshold; //0xe0
-	ULONG NumberOfHeaps; //0xe8
-	ULONG MaximumNumberOfHeaps; //0xec
-	VOID** ProcessHeaps; //0xf0
-	VOID* GdiSharedHandleTable; //0xf8
-	VOID* ProcessStarterHelper; //0x100
-	ULONG GdiDCAttributeList; //0x108
-	UCHAR Padding3[4]; //0x10c
-	struct _RTL_CRITICAL_SECTION* LoaderLock; //0x110
-	ULONG OSMajorVersion; //0x118
-	ULONG OSMinorVersion; //0x11c
-	USHORT OSBuildNumber; //0x120
-	USHORT OSCSDVersion; //0x122
-	ULONG OSPlatformId; //0x124
-	ULONG ImageSubsystem; //0x128
-	ULONG ImageSubsystemMajorVersion; //0x12c
-	ULONG ImageSubsystemMinorVersion; //0x130
-	UCHAR Padding4[4]; //0x134
-	ULONGLONG ActiveProcessAffinityMask; //0x138
-	ULONG GdiHandleBuffer[60]; //0x140
-	VOID(*PostProcessInitRoutine) (); //0x230
-	struct _RTL_BITMAP* TlsExpansionBitmap; //0x238
-	ULONG TlsExpansionBitmapBits[32]; //0x240
-	ULONG SessionId; //0x2c0
-	UCHAR Padding5[4]; //0x2c4
-	union _ULARGE_INTEGER AppCompatFlags; //0x2c8
-	union _ULARGE_INTEGER AppCompatFlagsUser; //0x2d0
-	VOID* pShimData; //0x2d8
-	VOID* AppCompatInfo; //0x2e0
-	struct _UNICODE_STRING CSDVersion; //0x2e8
-	struct _ACTIVATION_CONTEXT_DATA* ActivationContextData; //0x2f8
-	struct _ASSEMBLY_STORAGE_MAP* ProcessAssemblyStorageMap; //0x300
-	struct _ACTIVATION_CONTEXT_DATA* SystemDefaultActivationContextData; //0x308
-	struct _ASSEMBLY_STORAGE_MAP* SystemAssemblyStorageMap; //0x310
-	ULONGLONG MinimumStackCommit; //0x318
-	VOID* SparePointers[2]; //0x320
-	VOID* PatchLoaderData; //0x330
-	struct _CHPEV2_PROCESS_INFO* ChpeV2ProcessInfo; //0x338
-	ULONG AppModelFeatureState; //0x340
-	ULONG SpareUlongs[2]; //0x344
-	USHORT ActiveCodePage; //0x34c
-	USHORT OemCodePage; //0x34e
-	USHORT UseCaseMapping; //0x350
-	USHORT UnusedNlsField; //0x352
-	VOID* WerRegistrationData; //0x358
-	VOID* WerShipAssertPtr; //0x360
-	VOID* EcCodeBitMap; //0x368
-	VOID* pImageHeaderHash; //0x370
-	union {
-		ULONG TracingFlags; //0x378
-		struct {
-			ULONG HeapTracingEnabled : 1; //0x378
-			ULONG CritSecTracingEnabled : 1; //0x378
-			ULONG LibLoaderTracingEnabled : 1; //0x378
-			ULONG SpareTracingBits : 29; //0x378
-		};
-	};
-	UCHAR Padding6[4]; //0x37c
-	ULONGLONG CsrServerReadOnlySharedMemoryBase; //0x380
-	ULONGLONG TppWorkerpListLock; //0x388
-	struct _LIST_ENTRY TppWorkerpList; //0x390
-	VOID* WaitOnAddressHashTable[128]; //0x3a0
-	VOID* TelemetryCoverageHeader; //0x7a0
-	ULONG CloudFileFlags; //0x7a8
-	ULONG CloudFileDiagFlags; //0x7ac
-	CHAR PlaceholderCompatibilityMode; //0x7b0
-	CHAR PlaceholderCompatibilityModeReserved[7]; //0x7b1
-	struct _LEAP_SECOND_DATA* LeapSecondData; //0x7b8
-	union {
-		ULONG LeapSecondFlags; //0x7c0
-		struct {
-			ULONG SixtySecondEnabled : 1; //0x7c0
-			ULONG Reserved : 31; //0x7c0
-		};
-	};
-	ULONG NtGlobalFlag2; //0x7c4
-	ULONGLONG ExtendedFeatureDisableMask; //0x7c8
-}PEB, * PPEB;
+    UCHAR InheritedAddressSpace;
+    UCHAR ReadImageFileExecOptions;
+    UCHAR BeingDebugged;
+    union {
+        UCHAR BitField;
+        struct {
+            UCHAR ImageUsesLargePages : 1;
+            UCHAR IsProtectedProcess : 1;
+            UCHAR IsImageDynamicallyRelocated : 1;
+            UCHAR SkipPatchingUser32Forwarders : 1;
+            UCHAR IsPackagedProcess : 1;
+            UCHAR IsAppContainer : 1;
+            UCHAR IsProtectedProcessLight : 1;
+            UCHAR IsLongPathAwareProcess : 1;
+        };
+    };
+    UCHAR Padding0[4];
+    PVOID Mutant;
+    PVOID ImageBaseAddress;
+    struct _PEB_LDR_DATA* Ldr;
+    struct _RTL_USER_PROCESS_PARAMETERS* ProcessParameters;
+    PVOID SubSystemData;
+    PVOID ProcessHeap;
+    struct _RTL_CRITICAL_SECTION* FastPebLock;
+    PSLIST_HEADER AtlThunkSListPtr;
+    PVOID IFEOKey;
+    union {
+        ULONG CrossProcessFlags;
+        struct {
+            ULONG ProcessInJob : 1;
+            ULONG ProcessInitializing : 1;
+            ULONG ProcessUsingVEH : 1;
+            ULONG ProcessUsingVCH : 1;
+            ULONG ProcessUsingFTH : 1;
+            ULONG ProcessPreviouslyThrottled : 1;
+            ULONG ProcessCurrentlyThrottled : 1;
+            ULONG ProcessImagesHotPatched : 1;
+            ULONG ReservedBits0 : 24;
+        };
+    };
+    UCHAR Padding1[4];
+    PVOID KernelCallbackTable;
+    PVOID UserSharedInfoPtr;
+    ULONG SystemReserved;
+    ULONG AtlThunkSListPtr32;
+    PVOID ApiSetMap;
+    ULONG TlsExpansionCounter;
+    UCHAR Padding2[4];
+    struct _RTL_BITMAP* TlsBitmap;
+    ULONG TlsBitmapBits[2];
+    PVOID ReadOnlySharedMemoryBase;
+    PVOID SharedData;
+    PVOID* ReadOnlyStaticServerData;
+    PVOID AnsiCodePageData;
+    PVOID OemCodePageData;
+    PVOID UnicodeCaseTableData;
+    ULONG NumberOfProcessors;
+    ULONG NtGlobalFlag;
+    LARGE_INTEGER CriticalSectionTimeout;
+    ULONGLONG HeapSegmentReserve;
+    ULONGLONG HeapSegmentCommit;
+    ULONGLONG HeapDeCommitTotalFreeThreshold;
+    ULONGLONG HeapDeCommitFreeBlockThreshold;
+    ULONG NumberOfHeaps;
+    ULONG MaximumNumberOfHeaps;
+    PVOID* ProcessHeaps;
+    PVOID GdiSharedHandleTable;
+    PVOID ProcessStarterHelper;
+    ULONG GdiDCAttributeList;
+    UCHAR Padding3[4];
+    struct _RTL_CRITICAL_SECTION* LoaderLock;
+    ULONG OSMajorVersion;
+    ULONG OSMinorVersion;
+    USHORT OSBuildNumber;
+    USHORT OSCSDVersion;
+    ULONG OSPlatformId;
+    ULONG ImageSubsystem;
+    ULONG ImageSubsystemMajorVersion;
+    ULONG ImageSubsystemMinorVersion;
+    UCHAR Padding4[4];
+    ULONGLONG ActiveProcessAffinityMask;
+    ULONG GdiHandleBuffer[60];
+    void (*PostProcessInitRoutine)(void);
+    struct _RTL_BITMAP* TlsExpansionBitmap;
+    ULONG TlsExpansionBitmapBits[32];
+    ULONG SessionId;
+    UCHAR Padding5[4];
+    ULARGE_INTEGER AppCompatFlags;
+    ULARGE_INTEGER AppCompatFlagsUser;
+    PVOID pShimData;
+    PVOID AppCompatInfo;
+    struct _UNICODE_STRING CSDVersion;
+    struct _ACTIVATION_CONTEXT_DATA* ActivationContextData;
+    struct _ASSEMBLY_STORAGE_MAP* ProcessAssemblyStorageMap;
+    struct _ACTIVATION_CONTEXT_DATA* SystemDefaultActivationContextData;
+    struct _ASSEMBLY_STORAGE_MAP* SystemAssemblyStorageMap;
+    ULONGLONG MinimumStackCommit;
+    PVOID SparePointers[2];
+    PVOID PatchLoaderData;
+    struct _CHPEV2_PROCESS_INFO* ChpeV2ProcessInfo;
+    ULONG AppModelFeatureState;
+    ULONG SpareUlongs[2];
+    USHORT ActiveCodePage;
+    USHORT OemCodePage;
+    USHORT UseCaseMapping;
+    USHORT UnusedNlsField;
+    PVOID WerRegistrationData;
+    PVOID WerShipAssertPtr;
+    PVOID EcCodeBitMap;
+    PVOID pImageHeaderHash;
+    union {
+        ULONG TracingFlags;
+        struct {
+            ULONG HeapTracingEnabled : 1;
+            ULONG CritSecTracingEnabled : 1;
+            ULONG LibLoaderTracingEnabled : 1;
+            ULONG SpareTracingBits : 29;
+        };
+    };
+    UCHAR Padding6[4];
+    ULONGLONG CsrServerReadOnlySharedMemoryBase;
+    ULONGLONG TppWorkerpListLock;
+    struct _LIST_ENTRY TppWorkerpList;
+    PVOID WaitOnAddressHashTable[128];
+    PVOID TelemetryCoverageHeader;
+    ULONG CloudFileFlags;
+    ULONG CloudFileDiagFlags;
+    CHAR PlaceholderCompatibilityMode;
+    CHAR PlaceholderCompatibilityModeReserved[7];
+    struct _LEAP_SECOND_DATA* LeapSecondData;
+    union {
+        ULONG LeapSecondFlags;
+        struct {
+            ULONG SixtySecondEnabled : 1;
+            ULONG Reserved : 31;
+        };
+    };
+    ULONG NtGlobalFlag2;
+    ULONGLONG ExtendedFeatureDisableMask;
+} PEB, * PPEB;
+
 
 
