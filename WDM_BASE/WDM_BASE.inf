@@ -7,7 +7,7 @@ Signature="$WINDOWS NT$"
 Class=System
 ClassGuid={4d36e97d-e325-11ce-bfc1-08002be10318}
 Provider=%ManufacturerName%
-DriverVer=
+DriverVer=11/27/2024,1.0.0.0
 CatalogFile=WDM_BASE.cat
 PnpLockdown=1
 
@@ -23,8 +23,6 @@ DefaultDestDir = 13
 [SourceDisksFiles]
 
 [Manufacturer]; BORRAR SIEMPRE LO QUE HAY DEBAJO DE Manufacturer
-
-[Standard.NT$ARCH$]
 
 [Strings]
 ManufacturerName="<Your manufacturer name>" ;TODO: Replace with your manufacturer name
