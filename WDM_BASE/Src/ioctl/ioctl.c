@@ -1,14 +1,12 @@
 #include "ioctl.h"
 
-UNICODE_STRING DevName;
-UNICODE_STRING Win32Name;
-PDEVICE_OBJECT DeviceObj;
+
 
 NTSTATUS ioctlCreateClose(PDEVICE_OBJECT pDeviceObject, PIRP irp)
 {
 	UNREFERENCED_PARAMETER(pDeviceObject);
 
-	PAGED_CODE();
+	//PAGED_CODE();
 
 	irp->IoStatus.Status = STATUS_SUCCESS;
 	irp->IoStatus.Information = 0;
@@ -31,9 +29,13 @@ NTSTATUS ioctlDeviceControl(PDEVICE_OBJECT pDeviceObject, PIRP irp)
 	PCHAR data = "HOLA DESDE EL KERNEL";
 	size_t datalenght = strlen(data) + 1;
 
-	PAGED_CODE();
+	//PAGED_CODE();
 
 	pIoLocation = IoGetCurrentIrpStackLocation(irp);
+
+	if (pIoLocation == NULL)
+		return STATUS_INVALID_PARAMETER;
+
 	outputBufferLenght = pIoLocation->Parameters.DeviceIoControl.OutputBufferLength;
 	//inputBufferLenght = pIoLocation->Parameters.DeviceIoControl.InputBufferLength;
 
@@ -81,8 +83,11 @@ NTSTATUS createDevice(
 	NTSTATUS status
 )
 {
-	PAGED_CODE();
+	//PAGED_CODE();
 	RtlInitUnicodeString(&DevName, NT_DEVICE_NAME);
+
+	if (DriverObject == NULL)
+		return STATUS_INVALID_PARAMETER;
 
 	status = IoCreateDevice(
 		DriverObject,
@@ -108,7 +113,7 @@ NTSTATUS symLink(
 	NTSTATUS status
 )
 {
-	PAGED_CODE();
+	//PAGED_CODE();
 	RtlInitUnicodeString(&Win32Name, DOS_DEVICE_NAME);
 
 	status = IoCreateSymbolicLink(
@@ -119,7 +124,10 @@ NTSTATUS symLink(
 	if (!NT_SUCCESS(status))
 	{
 		dbg("[-] IoCreateSymbolicLink\n");
-		IoDeleteDevice(DeviceObj); // Eliminar la referencia de un puntero posiblemente nulo "DeviceObj" (lifetime.1).
+
+		if(DeviceObj != NULL)
+			IoDeleteDevice(DeviceObj); // Eliminar la referencia de un puntero posiblemente nulo "DeviceObj" (lifetime.1).
+
 		return status;
 	}
 	dbg("[+] IoCreateSymbolicLink\n");

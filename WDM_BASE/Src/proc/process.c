@@ -3,7 +3,7 @@
 
 VOID ProcessInfoByName(CONST PCHAR filename)
 {
-	PAGED_CODE();
+	// PAGED_CODE();
 	/* Obtengo el puntero a _EPROCESS */
 	PEPROCESS currProcess = PsGetCurrentProcess();
 	proc.sourceProcess = currProcess;
@@ -77,7 +77,7 @@ PUCHAR GetImageFileName(PEPROCESS process)
 	SIZE_T imageNameLenght = strlen((CONST PCHAR)ImageFileName);
 
 	/* Asigno un bloque de memoria del tamaño especificado, con el tipo y la proteccion especificados */
-	PUCHAR imageName = (PUCHAR)ExAllocatePool2(POOL_FLAG_NON_PAGED_EXECUTE, imageNameLenght + 1, 'aa'); // Anotación de error: Warning: Allocating executable POOL_FLAGS memory.
+	PUCHAR imageName = (PUCHAR)ExAllocatePool2(POOL_FLAG_NON_PAGED, imageNameLenght + 1, 'aa'); // Anotación de error: Warning: Allocating executable POOL_FLAGS memory.
 
 	if (!imageName)
 		return NULL;
