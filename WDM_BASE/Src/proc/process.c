@@ -1,14 +1,12 @@
 ﻿#pragma warning (disable : 4047 4189)
 #include "process.h"
 
+
 VOID ProcessInfoByName(CONST PCHAR filename)
 {
-	// PAGED_CODE();
-	/* Obtengo el puntero a _EPROCESS */
 	PEPROCESS currProcess = PsGetCurrentProcess();
-	proc.sourceProcess = currProcess;
+	PVOID sourceProcess = currProcess;
 
-	/* Obtengo el puntero al miembro ActiveProcessLinks de la estructura _EPROCESS */
 	PLIST_ENTRY aplList = (PLIST_ENTRY)((ULONG_PTR)currProcess + 0x1d8);
 	PLIST_ENTRY entry;
 
@@ -16,74 +14,55 @@ VOID ProcessInfoByName(CONST PCHAR filename)
 
 	do
 	{
-		/* Obtengo el _EPROCESS de los demas procesos */
-		/* Resto 0x448 (ActiveProcessLinks) para obtenerlo */
 		PEPROCESS processes = (PEPROCESS)((ULONG_PTR)entry - 0x1d8);
 
-		proc.imageFileName = GetImageFileName(processes); // Creo que falta algo (Manejo de memoria o de resultado ????????????)
+		proc.imageFileName = GetImageFileName(processes);
 
-		if (proc.imageFileName == NULL)
-			return;
+		if (!proc.imageFileName) return;
 
 		if (strcmp((CONST PCHAR)proc.imageFileName, filename) == 0)
 		{
-			// Aca llamo a todas las funciones
-
 			proc.targetProcess = processes;
-			dbg("Target Process: 0x%p\n", proc.targetProcess);
 			proc.uniqueProcessId = GetUniqueProcessId(processes);
 			proc.imageFileName = proc.imageFileName;
 			proc.imageBaseAddress = GetImageBaseAddress(processes);
-			dbg("ImageBaseAddress: 0x%p\n", proc.imageBaseAddress);
-			GetModuleBase(processes, NULL);
 			return;
 		}
 
-
-
 		ExFreePool(proc.imageFileName);
 
-		if (entry == NULL)
-			return;
+		if (!entry) return;
 
 		entry = entry->Flink;
 	} while (entry != aplList);
+
+	return;
 
 }
 
 ULONG GetUniqueProcessId(PEPROCESS process)
 {
-	/* Obtengo el miembro UniqueProcessId */
 	ULONG_PTR pid = (ULONG_PTR)((ULONG_PTR)process + 0x1d0);
 
-	if (!pid)
-		return 0;
+	if (!pid) return 0;
 
 	ULONG processId = *((ULONG*)pid);
 
 	return processId;
 }
 
-/* No entiendo muy bien como funciona */
-/* Falta manejar uno que otro error */
 PUCHAR GetImageFileName(PEPROCESS process)
 {
-	/* Obtengo el miembro ImageFileName */
 	PUCHAR ImageFileName = (PUCHAR)((ULONG_PTR)process + 0x338);
 
-	if (!ImageFileName)
-		return NULL;
+	if (!ImageFileName) return NULL;
 
-	/* Obtengo la longitud de ImageFileName */
 	SIZE_T imageNameLenght = strlen((CONST PCHAR)ImageFileName);
 
-	/* Asigno un bloque de memoria del tamaño especificado, con el tipo y la proteccion especificados */
-	PUCHAR imageName = (PUCHAR)ExAllocatePool2(POOL_FLAG_NON_PAGED, imageNameLenght + 1, 'aa'); // Anotación de error: Warning: Allocating executable POOL_FLAGS memory.
+	PUCHAR imageName = (PUCHAR)ExAllocatePool2(POOL_FLAG_NON_PAGED, imageNameLenght + 1, 'aa');
 
-	if (!imageName)
-		return NULL;
+	if (!imageName) return NULL;
 
-	/* Copio la memoria (Source) al destino (ExAllocatePool2)*/
 	RtlCopyMemory(imageName, ImageFileName, imageNameLenght);
 	imageName[imageNameLenght] = '\0';
 
@@ -92,132 +71,87 @@ PUCHAR GetImageFileName(PEPROCESS process)
 
 PVOID GetImageBaseAddress(PEPROCESS process)
 {
-	/* Obtengo el puntero a _PEB */
 	PPEB peb = *(PPEB*)((ULONG_PTR)process + 0x2e0);
-	if (!peb)
-		return NULL;
+	if (!peb) return NULL;
 
-	/* Obtengo el puntero del miembro ImageBaseAddress */
 	PVOID ptrImageBaseAddress = (PVOID)((ULONG_PTR)peb + 0x010);
-	if (!ptrImageBaseAddress)
-		return NULL;
+	if (!ptrImageBaseAddress) return NULL;
 
 	KAPC_STATE apcState;
 	PVOID imageBaseAddress = NULL;
+
 	__try
 	{
 
-		if (process == NULL)
-			return NULL;
+		if (!process) return NULL;
 
-		/* Obtengo el miembro ImageBaseAddress */
 		KeStackAttachProcess((PRKPROCESS)process, &apcState);
 
 		imageBaseAddress = *(PVOID*)ptrImageBaseAddress;
-		ProbeForRead((PVOID)imageBaseAddress, sizeof(PVOID), sizeof(ULONG)); // solo chequea el buffer del usuario
+		ProbeForRead((PVOID)imageBaseAddress, sizeof(PVOID), sizeof(ULONG));
 
-		if (!imageBaseAddress)
-			return NULL;
+		if (!imageBaseAddress) return NULL;
 	}
 	__except (EXCEPTION_EXECUTE_HANDLER)
 	{
-		/* Nada */
-		KeUnstackDetachProcess(&apcState);
+		dbg("EXCEPTION: 0x%X\n", GetExceptionCode());
 	}
 
-	/* Ponerlo dentro del __try causa BSOD */
 	KeUnstackDetachProcess(&apcState);
 
 	return imageBaseAddress;
 }
 
-/* ????? 🤯🤯🤯🤯 ????? */
-// No funka, problema para otra hora, dia, mes o año. Incluso para otra persona :p
-PVOID GetModuleBase(PEPROCESS process, CONST PCHAR modname)
+PVOID GetModuleBase(PEPROCESS process, PWCH modname)
 {
-	//UNREFERENCED_PARAMETER(process);
-	UNREFERENCED_PARAMETER(modname);
-
 	KAPC_STATE apc;
 
-	if (!process)
+	if (!process || !modname)
 		return NULL;
+
+	KeStackAttachProcess(process, &apc);
+
+	PVOID dllBase = NULL;
 
 	__try
 	{
-		KeStackAttachProcess(process, &apc);
-
 		PPEB peb = *(PPEB*)((ULONG_PTR)process + 0x2e0);
-		if (!peb)
-		{
-			dbg("PEB es NULL\n");
-			return NULL;
-		}
-		dbg("PEB: 0x%p\n", peb);
+		if (!peb) return NULL;
 
 		PPEB_LDR_DATA ldr = peb->Ldr;
-		if (!ldr)
-		{
-			dbg("LDR es NULL\n");
-			return NULL;
-		}
-		dbg("ldr: 0x%p\n", ldr);
+		if (!ldr) return NULL;
 
-#pragma region revisar
-		// No se si hace falta separarlos (Misma direccion de memoria)
-		PLIST_ENTRY ldrEntry = &ldr->InLoadOrderModuleList->Flink;
-		if (!ldrEntry)
-		{
-			dbg("ldrEntry es NULL\n");
-			return NULL;
-		}
-		dbg("ldrEntry: 0x%p\n", ldrEntry);
-
-
-#pragma endregion
+		PLIST_ENTRY ldrEntry = &ldr->InLoadOrderModuleList;
+		if (!ldrEntry) return NULL;
 		
-
-		PLIST_ENTRY currEntry = ldrEntry;
+		PLIST_ENTRY currEntry = ldrEntry->Flink;
 		do
 		{
 			PLDR_DATA_TABLE_ENTRY ldrTableEntry = CONTAINING_RECORD(currEntry, LDR_DATA_TABLE_ENTRY, InLoadOrderLinks);
-			//BreakPoint;
-            if (!ldrTableEntry)
-            {
-				dbg("ldrTableEntry es NULL\n");
-                return NULL;
-            }
+			
+			if (!ldrTableEntry) return NULL;
 
-            dbg("ldrTableEntry: 0x%p\n", ldrTableEntry);
-			dbg("dllBase: 0x%p\n", ldrTableEntry->DllBase);
-			dbg("---\n");
+			if (wcscmp(ldrTableEntry->BaseDllName.Buffer, modname) == 0)
+			{
+
+				dllBase = ldrTableEntry->DllBase;
+			}
 
 			currEntry = currEntry->Flink;
 
 		} while (currEntry != ldrEntry); 
 
 
-		//do
-		//{
-		//	PLDR_DATA_TABLE_ENTRY ldrEntry = CONTAINING_RECORD(modList, LDR_DATA_TABLE_ENTRY, InLoadOrderLinks); // AHORA MISMO EN LA ESTRUCTURA DE PLDR_DATA
-
-		//	dbg("?? : 0x%p\n", ldrEntry->DllBase);
-
-		//	entry = entry->Flink;
-
-		//} while (entry != modList);
-
-
-
 	}
 	__except (EXCEPTION_EXECUTE_HANDLER)
 	{
 		dbg("EXCEPTION: 0x%X\n", GetExceptionCode());
-		// KeUnstackDetachProcess(&apc);
+
 	}
 
 	KeUnstackDetachProcess(&apc);
-	return NULL;
+
+	return dllBase;
 }
 
 PVOID GetKernelModuleBase(PEPROCESS process, CONST PCHAR modname)

@@ -2,18 +2,27 @@
 #pragma warning (disable: 4201)
 #include "globals.h"
 
+// Declarar struct (nombre de la estructura, para evitar problemas de desplazamiento de memoria)
+//
+// MAL
+// PLIST_ENTRY InLoadOrderLinks;
+//
+// BIEN
+// LIST_ENTRY InLoadOrderLinks;
+// struct _LIST_ENTRY InLoadOrderLinks;
+
 typedef struct _LDR_DATA_TABLE_ENTRY {
-    PLIST_ENTRY InLoadOrderLinks;               // 0x000
-    PLIST_ENTRY InMemoryOrderLinks;             // 0x010
-    PLIST_ENTRY InInitializationOrderLinks;     // 0x020
-    PVOID DllBase;                              // 0x030
-    PVOID EntryPoint;                           // 0x038
-    ULONG SizeOfImage;                          // 0x040
-    PUNICODE_STRING FullDllName;                // 0x048
-    PUNICODE_STRING BaseDllName;                // 0x058
-    UCHAR FlagGroup[4];                         // 0x068 (1 byte each)
-    union {
-        ULONG Flags;                           // 0x068
+    struct _LIST_ENTRY InLoadOrderLinks;
+    struct _LIST_ENTRY InMemoryOrderLinks;
+    struct _LIST_ENTRY InInitializationOrderLinks;
+    PVOID DllBase;
+    PVOID EntryPoint;
+    ULONG SizeOfImage;
+    struct _UNICODE_STRING FullDllName;
+    struct _UNICODE_STRING BaseDllName;
+   /* union {
+        UCHAR FlagGroup[4];
+        ULONG Flags;
         struct {
             ULONG PackagedBinary : 1;
             ULONG MarkedForRemoval : 1;
@@ -23,55 +32,50 @@ typedef struct _LDR_DATA_TABLE_ENTRY {
             ULONG ProcessStaticImport : 1;
             ULONG InLegacyLists : 1;
             ULONG InIndexes : 1;
-            ULONG ShimDll : 1;
+            ULONG ShimDll : 1;405281
             ULONG InExceptionTable : 1;
-            ULONG VerifierProvider : 1;
-            ULONG ShimEngineCalloutSent : 1;
+            ULONG ReservedFlags1 : 2;
             ULONG LoadInProgress : 1;
             ULONG LoadConfigProcessed : 1;
             ULONG EntryProcessed : 1;
             ULONG ProtectDelayLoad : 1;
-            ULONG AuxIatCopyPrivate : 1;
-            ULONG ReservedFlags3 : 1;
+            ULONG ReservedFlags3 : 2;
             ULONG DontCallForThreads : 1;
             ULONG ProcessAttachCalled : 1;
             ULONG ProcessAttachFailed : 1;
-            ULONG ScpInExceptionTable : 1;
+            ULONG CorDeferredValidate : 1;
             ULONG CorImage : 1;
             ULONG DontRelocate : 1;
             ULONG CorILOnly : 1;
             ULONG ChpeImage : 1;
             ULONG ChpeEmulatorImage : 1;
-            ULONG ReservedFlags5 : 2;
-            ULONG Redirected : 1;
-            ULONG ReservedFlags6 : 2;
-            ULONG CompatDatabaseProcessed : 1;
-        };
-    };
-    USHORT ObsoleteLoadCount;                   // 0x06c
-    USHORT TlsIndex;                            // 0x06e
-    PLIST_ENTRY HashLinks;                      // 0x070
-    ULONG TimeDateStamp;                        // 0x080
-    struct PACTIVATION_CONTEXT* EntryPointActivationContext;  // 0x088
-    PVOID Lock;                                 // 0x090
-    struct _LDR_DDAG_NODE* DdagNode;                   // 0x098
-    PLIST_ENTRY NodeModuleLink;                 // 0x0a0
-    struct _LDRP_LOAD_CONTEXT* LoadContext;            // 0x0b0
-    PVOID ParentDllBase;                        // 0x0b8
-    PVOID SwitchBackContext;                    // 0x0c0
-    struct _RTL_BALANCED_NODE BaseAddressIndexNode;    // 0x0c8
-    struct _RTL_BALANCED_NODE MappingInfoIndexNode;    // 0x0e0
-    ULONG64 OriginalBase;                       // 0x0f8
-    LARGE_INTEGER LoadTime;                     // 0x100
-    ULONG BaseNameHashValue;                    // 0x108
-    struct _LDR_DLL_LOAD_REASON* LoadReason;            // 0x10c
-    ULONG ImplicitPathOptions;                  // 0x110
-    ULONG ReferenceCount;                       // 0x114
-    ULONG DependentLoadFlags;                   // 0x118
-    UCHAR SigningLevel;                         // 0x11c
-    ULONG CheckSum;                             // 0x120
-    PVOID ActivePatchImageBase;                 // 0x128
-    struct _LDR_HOT_PATCH_STATE* HotPatchState;         // 0x130
+            ULONG ReservedFlags5 : 5;
+        } DUMMYSTRUCTNAME;
+    } ENTRYFLAGSUNION;
+    USHORT ObsoleteLoadCount;
+    USHORT TlsIndex;
+    PLIST_ENTRY HashLinks;
+    ULONG TimeDateStamp;
+    struct _ACTIVATION_CONTEXT* EntryPointActivationContext;
+    PVOID Lock;
+    struct PLDR_DDAG_NODE* DdagNode;
+    LIST_ENTRY NodeModuleLink;
+    struct _LDRP_LOAD_CONTEXT* LoadContext;
+    PVOID ParentDllBase;
+    PVOID SwitchBackContext;
+    RTL_BALANCED_NODE BaseAddressIndexNode;
+    RTL_BALANCED_NODE MappingInfoIndexNode;
+    ULONG_PTR OriginalBase;
+    LARGE_INTEGER LoadTime;
+    ULONG BaseNameHashValue;
+    enum LDR_DLL_LOAD_REASON LoadReason;
+    ULONG ImplicitPathOptions;
+    ULONG ReferenceCount;
+    ULONG DependentLoadFlags;
+    UCHAR SigningLevel;
+    ULONG CheckSum;
+    PVOID ActivePatchImageBase;
+    enum LDR_HOT_PATCH_STATE HotPatchState;*/
 } LDR_DATA_TABLE_ENTRY, * PLDR_DATA_TABLE_ENTRY;
 
 typedef struct _PEB_LDR_DATA {

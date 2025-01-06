@@ -33,7 +33,7 @@
     <ClCompile Include="src\proc\process.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\test\test.c">
+    <ClCompile Include="src\mem\mem.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -53,7 +53,7 @@
     <ClInclude Include="src\global\struct.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\test\test.h">
+    <ClInclude Include="src\mem\mem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
