@@ -2,7 +2,7 @@
 
 Este no es un proyecto terminado, sino un código de prueba desarrollado con fines de experimentación y aprendizaje. Está diseñado para explorar y entender conceptos de nivel de núcleo (kernel) y estructuras de procesos de Windows, además de trabajar un poco con ioctl para comunicar el espacio de usuario con el núcleo.
 
-# ¿Qué necesito saber?
+# Qué necesito saber?
 
 - C/C++ [Modo Usuario](https://learn.microsoft.com/en-us/cpp/?view=msvc-170) [Modo kernel](https://learn.microsoft.com/en-us/windows-hardware/drivers/)
 - Cómo funciona la memoria
