@@ -24,36 +24,36 @@
     </Inf>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\ioctl\ioctl.c">
+    <ClCompile Include="temp\ioctl\ioctl.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\main.c">
+    <ClCompile Include="temp\main.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\proc\process.c">
+    <ClCompile Include="temp\proc\process.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\mem\mem.c">
+    <ClCompile Include="temp\mem\mem.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\proc\process.h">
+    <ClInclude Include="temp\proc\process.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\global\globals.h">
+    <ClInclude Include="temp\global\globals.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\ioctl\ioctl.h">
+    <ClInclude Include="temp\ioctl\ioctl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\global\debug.h">
+    <ClInclude Include="temp\global\debug.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\global\struct.h">
+    <ClInclude Include="temp\global\struct.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\mem\mem.h">
+    <ClInclude Include="temp\mem\mem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
