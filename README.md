@@ -4,7 +4,7 @@ Este no es un proyecto terminado, sino un código de prueba desarrollado con fin
 
 # ¿Qué necesito saber?
 
-- C/C++ [Modo Usuario](https://learn.microsoft.com/en-us/cpp/?view=msvc-170) [Modo Núcleo](https://learn.microsoft.com/en-us/windows-hardware/drivers/)
+- C/C++ [Modo Usuario](https://learn.microsoft.com/en-us/cpp/?view=msvc-170) [Modo kernel](https://learn.microsoft.com/en-us/windows-hardware/drivers/)
 - Cómo funciona la memoria
 - [Estructuras de Procesos de Windows](https://www.vergiliusproject.com/)
 
