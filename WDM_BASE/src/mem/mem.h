@@ -4,10 +4,17 @@
 
 #include "..\global\globals.h"
 
-NTSTATUS ReadMemory(
+typedef enum valueType {
+    tInt, // int
+    tFloat, // float
+    tDouble, // double
+    tString // string
+}VT;
+
+PVOID ReadMemory(
 	PVOID address,
 	PVOID buffer,
-	ULONG size
+	VT valueType
 );
 
 NTSTATUS WriteMemory(

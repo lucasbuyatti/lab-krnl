@@ -1,6 +1,7 @@
 #include "global\globals.h"
 #include "proc\process.h"
 #include "ioctl\ioctl.h"
+#include "mem\mem.h"
 
 DRIVER_INITIALIZE DriverEntry;
 DRIVER_UNLOAD UnloadDriver;
@@ -23,7 +24,7 @@ DriverEntry(
 	dbg("[+] Process ID %lu\n", proc.uniqueProcessId);
 	dbg("[+] Process name %s\n", proc.imageFileName);
 	dbg("[+] Process base address 0x%p\n", proc.imageBaseAddress);
-	dbg("[+] Process NTDLL.dll 0x%p\n", GetModuleBase((PEPROCESS)proc.targetProcess, L"ntdll.dll"));
+	dbg("[+] Process NTDLL.dll 0x%p\n", GetModuleBase((PEPROCESS)proc.targetProcess, L""));
 
 	/*createDevice(DriverObject, status);
 	symLink(status);

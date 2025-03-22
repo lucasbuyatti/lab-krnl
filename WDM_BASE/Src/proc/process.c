@@ -71,6 +71,8 @@ PUCHAR GetImageFileName(PEPROCESS process)
 
 PVOID GetImageBaseAddress(PEPROCESS process)
 {
+	if (!process) return NULL;
+
 	PPEB peb = *(PPEB*)((ULONG_PTR)process + 0x2e0);
 	if (!peb) return NULL;
 
@@ -82,8 +84,6 @@ PVOID GetImageBaseAddress(PEPROCESS process)
 
 	__try
 	{
-
-		if (!process) return NULL;
 
 		KeStackAttachProcess((PRKPROCESS)process, &apcState);
 
