@@ -141,14 +141,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="temp\main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\includes.hpp" />
-    <ClInclude Include="src\resource.h" />
+    <ClInclude Include="temp\includes.hpp" />
+    <ClInclude Include="temp\resource.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="src\USER_BASE.rc" />
+    <ResourceCompile Include="temp\USER_BASE.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
