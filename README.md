@@ -1,6 +1,6 @@
 # Sobre el Proyecto
 
-Este no es un proyecto terminado, sino un código de prueba desarrollado con fines de experimentación y aprendizaje. Está diseñado para explorar y entender conceptos de nivel de núcleo (kernel) y estructuras de procesos de Windows, además de trabajar un poco con ioctl para comunicar el espacio de usuario con el núcleo.
+Este no es un proyecto terminado, sino un código de prueba desarrollado con fines de experimentación y aprendizaje. Está diseñado para explorar y entender conceptos de kernel y estructuras de procesos de Windows, además de trabajar un poco con ioctl para comunicar el espacio de usuario con el kernel.
 
 # Qué necesito saber?
 
