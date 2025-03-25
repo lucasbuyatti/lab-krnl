@@ -11,31 +11,48 @@ Once the function finds the target process, it interacts with other structure me
 
 
 ```mermaid
-graph TD;
-    A["Start"] --> B["Get Current Process EPROCESS"]
-    B --> C["Access Process List (aplList)"]
-    C --> D["Iterate Over Process List"]
-    D --> D1["Convert LIST_ENTRY to PEPROCESS (entry - 0x1d8)"]
-    D1 --> E["Get Process Image Name (GetImageFileName)"]
-    E --> F{"Does Name Match?"}
-    F -- No --> G["Free Image Name Memory (ExFreePool)"]
-    G --> H["Move to Next Process"]
-    H --> I1{"Is Entry Valid?"}
-    I1 -- Yes --> D
-    I1 -- No --> K["Terminate"]
-    F -- Yes --> J["Get Unique Process ID (GetUniqueProcessId)"]
-    J --> L["Get Image Base Address (GetImageBaseAddress)"]
-    L --> M["Store Process Info"]
-    M --> K
-    K --> N["End"]
-
-    subgraph "Helper Functions"
-        F1["GetUniqueProcessId"]
-        F2["GetImageFileName"]
-        F3["GetImageBaseAddress"]
-    end
-
-    D1 --> F2
-    J --> F1
-    L --> F3
+graph TD
+    A["Start: ProcessInfoByName(filename)"]
+    B["Get currProcess = PsGetCurrentProcess()"]
+    C["aplList = currProcess + 0x1d8"]
+    D["entry = aplList"]
+    E{"entry != aplList?"}
+    F["Calculate processes = entry - 0x1d8"]
+    G["Get imageFileName = GetImageFileName(processes)"]
+    H{"imageFileName is NULL?"}
+    I["Return (Error)"]
+    J["Compare imageFileName with filename"]
+    K{"Are they equal?"}
+    L["Set proc.targetProcess = processes"]
+    M["Get proc.uniqueProcessId = GetUniqueProcessId(processes)"]
+    N["Get proc.imageBaseAddress = GetImageBaseAddress(processes)"]
+    O["Return (Process Found)"]
+    P["ExFreePool(imageFileName)"]
+    Q{"entry is NULL?"}
+    R["Return (Error)"]
+    S["entry = entry->Flink"]
+    T["Return to loop"]
+    U["Return (Not Found)"]
+    
+    A --> B  
+    B --> C  
+    C --> D  
+    D --> E  
+    E -- "Yes" --> F  
+    E -- "No" --> U  
+    F --> G  
+    G --> H  
+    H -- "Yes" --> I  
+    H -- "No" --> J  
+    J --> K  
+    K -- "Yes" --> L  
+    L --> M  
+    M --> N  
+    N --> O  
+    K -- "No" --> P  
+    P --> Q  
+    Q -- "Yes" --> R  
+    Q -- "No" --> S  
+    S --> T  
+    T --> E  
 ```
