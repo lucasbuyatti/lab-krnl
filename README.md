@@ -62,7 +62,6 @@ graph TD
     S --> T  
     T --> E
 ```
-Markdown
 
 # Haciendo el código del kernel funcional
 
