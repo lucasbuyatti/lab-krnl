@@ -56,3 +56,49 @@ graph TD
     S --> T  
     T --> E  
 ```
+
+# Making the kernel code functional
+- Follow steps 1 to 3 from [Microsoft's guide](https://learn.microsoft.com/en-us/windows-hardware/drivers/download-the-wdk)
+- Install [VirtualBox](https://www.virtualbox.org/)
+- Install [WinDbg](https://learn.microsoft.com/en-us/windows-hardware/drivers/debugger/) on the host computer
+- Download and install [Windows 11 ISO](https://www.microsoft.com/es-es/software-download/windows11) in VirtualBox
+- Set up the virtual environment in VirtualBox
+- Configure WinDbg
+- Update the [structs](https://github.com/lucasbuyatti/BASE/blob/master/WDM_BASE/src/global/struct.h) and [hex code](https://github.com/lucasbuyatti/BASE/blob/master/WDM_BASE/src/global/struct.h) according to your Windows version
+- Run the following commands in the virtual machine's **CMD**:  
+  ```shell
+  bcdedit /set testsigning on  
+  bcdedit /set nointegritychecks on
+  ```
+ - Clone this repository
+ - Compile the code
+ - Create a **.bat** with this:
+ **Create and start the driver**
+```sh
+@echo off
+echo Installing and starting the driver...
+
+:: Create service
+sc create MyDriver binPath= C:\path\to\driver.sys type= kernel start= demand
+
+:: Start Service
+sc start MyDriver
+
+echo Driver installed and started successfully.
+pause
+```
+ **Stop and delete the driver**
+```sh
+@echo off
+echo Stopping and deleting the driver...
+
+:: Stop the driver service
+sc stop MyDriver
+
+:: Delete the driver service
+sc delete MyDriver
+
+echo Driver stopped and deleted successfully.
+pause
+```
+
