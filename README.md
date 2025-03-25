@@ -12,7 +12,7 @@ Este no es un proyecto terminado, sino un código de prueba desarrollado con fin
 
 **En esta documentación, nos centraremos en el **WDM_BASE**. El propósito principal de este proyecto es proporcionar información crítica sobre un proceso específico, interactuando con los miembros de la estructura `EPROCESS`. La función clave en el proyecto es **ProcessInfoByName**, ubicada en **process.c**.**
 
-Esta función es responsable de recuperar información sobre un proceso haciendo referencia a su estructura `EPROCESS`, que está cargada en el núcleo. El primer paso es iterar sobre los procesos utilizando el miembro `ActiveProcessLinks`, lo que permite acceder a la lista de procesos activos.
+Esta función es responsable de recuperar información sobre un proceso haciendo referencia a su estructura `EPROCESS`, que está cargada en el kernel. El primer paso es iterar sobre los procesos utilizando el miembro `ActiveProcessLinks`, lo que permite acceder a la lista de procesos activos.
 
 Una vez que la función encuentra el proceso objetivo, interactúa con otros miembros de la estructura, como el `PEB` (Process Environment Block), para obtener datos adicionales que no están disponibles directamente en el `EPROCESS`. Este proceso proporciona información detallada sobre el proceso objetivo, como su `UniqueProcessId`, el nombre del archivo de imagen y la dirección base de la imagen.
 
