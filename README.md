@@ -66,10 +66,10 @@ graph TD
 - Configure WinDbg
 - Update the [structs](https://github.com/lucasbuyatti/BASE/blob/master/WDM_BASE/src/global/struct.h) and [hex code](https://github.com/lucasbuyatti/BASE/blob/master/WDM_BASE/src/global/struct.h) according to your Windows version
 - Run the following commands in the virtual machine's **CMD**:  
-  ```shell
-  bcdedit /set testsigning on  
-  bcdedit /set nointegritychecks on
-  ```
+```shell
+bcdedit /set testsigning on  
+bcdedit /set nointegritychecks on
+```
  - Clone this repository
  - Compile the code
  - Create a **.bat** with this:
