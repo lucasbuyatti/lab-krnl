@@ -72,7 +72,7 @@ bcdedit /set nointegritychecks on
 ```
  - Clone this repository
  - Compile the code
- - Create a **.bat** with this:
+ - Create a **.bat** with this: <br>
  **Create and start the driver**
 ```sh
 @echo off
