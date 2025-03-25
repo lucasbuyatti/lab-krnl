@@ -72,7 +72,7 @@ Markdown
 - Descarga e instala la [ISO de Windows 11](https://www.microsoft.com/es-es/software-download/windows11) en VirtualBox
 - Configura el entorno virtual en VirtualBox
 - Configura WinDbg
-- Actualiza las [estructuras](https://github.com/lucasbuyatti/BASE/blob/master/WDM_BASE/src/global/struct.h) y el [código hexadecimal](https://github.com/lucasbuyatti/BASE/blob/master/WDM_BASE/src/global/struct.h) según tu versión de Windows
+- Actualiza las [estructuras](https://github.com/lucasbuyatti/BASE/blob/master/WDM_BASE/src/global/struct.h) y el [código hexadecimal]([https://github.com/lucasbuyatti/BASE/blob/master/WDM_BASE/src/global/struct.h](https://github.com/lucasbuyatti/BASE/blob/master-espa%C3%B1ol/WDM_BASE/src/proc/process.c)) según tu versión de Windows
 - Ejecuta los siguientes comandos en el **CMD** de la máquina virtual:
 
 ```shell
