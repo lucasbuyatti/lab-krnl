@@ -5,7 +5,7 @@ This is not a finished project, but rather a test code developed for experimenta
 - How Memory works
 - [Windows Process Structures](https://www.vergiliusproject.com/)
 # Documentation
-**In this documentation, we will focus on the **WDM_BASE**. The main purpose of this project is to provide critical information about a specific process by interacting with the members of the `EPROCESS` structure. The key function in the project is **ProcessInfoByName**, located in **process.c**.**
+**In this documentation, we will focus on the **WDM_BASE**. The main purpose of this project is to provide critical information about a specific process by interacting with the members of the `EPROCESS` structure. The key function in the project is **ProcessInfoByName**, located in [process.c](https://github.com/lucasbuyatti/BASE/blob/master/WDM_BASE/src/proc/process.c).
 This function is responsible for retrieving information about a process by referencing its `EPROCESS` structure, which is loaded into the kernel. The first step is to iterate over the processes using the `ActiveProcessLinks` member, which allows accessing the list of active processes.
 Once the function finds the target process, it interacts with other structure members, such as `PEB` (Process Environment Block), to gather additional data that is not available directly in the `EPROCESS`. This process provides detailed information about the target process, such as its `UniqueProcessId`, image file name and image base address.
 
