@@ -71,16 +71,15 @@ graph TD
 - Descarga e instala la [ISO de Windows 11](https://www.microsoft.com/es-es/software-download/windows11) en VirtualBox
 - Configura el entorno virtual en VirtualBox
 - Configura WinDbg
+- Clona este repositorio
 - Actualiza las [estructuras](https://github.com/lucasbuyatti/BASE/blob/master/WDM_BASE/src/global/struct.h) y el [código hexadecimal]([https://github.com/lucasbuyatti/BASE/blob/master/WDM_BASE/src/global/struct.h](https://github.com/lucasbuyatti/BASE/blob/master-espa%C3%B1ol/WDM_BASE/src/proc/process.c)) según tu versión de Windows
+- Compila el código
 - Ejecuta los siguientes comandos en el **CMD** de la máquina virtual:
 
 ```shell
   bcdedit /set testsigning on
   bcdedit /set nointegritychecks on
 ```
-
-- Clona este repositorio
-- Compila el código
 - Crea un archivo .bat con lo siguiente:
 
 **Crear e iniciar el controlador**
