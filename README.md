@@ -62,3 +62,56 @@ graph TD
     S --> T  
     T --> E
 ```
+Markdown
+
+# Haciendo el código del kernel funcional
+
+- Sigue los pasos 1 a 3 de la [guía de Microsoft](https://learn.microsoft.com/es-es/windows-hardware/drivers/download-the-wdk)
+- Instala [VirtualBox](https://www.virtualbox.org/)
+- Instala [WinDbg](https://learn.microsoft.com/es-es/windows-hardware/drivers/debugger/) en la computadora anfitriona (host)
+- Descarga e instala la [ISO de Windows 11](https://www.microsoft.com/es-es/software-download/windows11) en VirtualBox
+- Configura el entorno virtual en VirtualBox
+- Configura WinDbg
+- Actualiza las [estructuras](https://github.com/lucasbuyatti/BASE/blob/master/WDM_BASE/src/global/struct.h) y el [código hexadecimal](https://github.com/lucasbuyatti/BASE/blob/master/WDM_BASE/src/global/struct.h) según tu versión de Windows
+- Ejecuta los siguientes comandos en el **CMD** de la máquina virtual:
+
+```shell
+  bcdedit /set testsigning on
+  bcdedit /set nointegritychecks on
+```
+
+- Clona este repositorio
+- Compila el código
+- Crea un archivo .bat con lo siguiente:
+
+**Crear e iniciar el controlador**
+```sh
+
+@echo off
+echo Instalando e iniciando el controlador...
+
+:: Crear servicio
+sc create MyDriver binPath= C:\ruta\al\controlador.sys type= kernel start= demand
+
+:: Iniciar servicio
+sc start MyDriver
+
+echo Controlador instalado e iniciado con éxito.
+pause
+```
+
+**Detener y eliminar el controlador**
+```sh
+
+@echo off
+echo Deteniendo y eliminando el controlador...
+
+:: Detener el servicio del controlador
+sc stop MyDriver
+
+:: Eliminar el servicio del controlador
+sc delete MyDriver
+
+echo Controlador detenido y eliminado con éxito.
+pause
+```
