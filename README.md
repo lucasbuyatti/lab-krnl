@@ -17,30 +17,48 @@ Esta función es responsable de recuperar información sobre un proceso haciendo
 Una vez que la función encuentra el proceso objetivo, interactúa con otros miembros de la estructura, como el `PEB` (Process Environment Block), para obtener datos adicionales que no están disponibles directamente en el `EPROCESS`. Este proceso proporciona información detallada sobre el proceso objetivo, como su `UniqueProcessId`, el nombre del archivo de imagen y la dirección base de la imagen.
 
 ```mermaid
-graph TD;
-    A["Inicio"] --> B["Obtener EPROCESS del Proceso Actual"]
-    B --> C["Acceder a la Lista de Procesos (aplList)"]
-    C --> D["Iterar sobre la Lista de Procesos"]
-    D --> D1["Convertir LIST_ENTRY a PEPROCESS (entry - 0x1d8)"]
-    D1 --> E["Obtener Nombre de Imagen del Proceso (GetImageFileName)"]
-    E --> F{"¿El Nombre Coincide?"}
-    F -- No --> G["Liberar Memoria de Nombre de Imagen (ExFreePool)"]
-    G --> H["Mover al Siguiente Proceso"]
-    H --> I1{"¿Es Entrada Válida?"}
-    I1 -- Sí --> D
-    I1 -- No --> K["Terminar"]
-    F -- Sí --> J["Obtener Unique Process ID (GetUniqueProcessId)"]
-    J --> L["Obtener Dirección Base de la Imagen (GetImageBaseAddress)"]
-    L --> M["Guardar Información del Proceso"]
-    M --> K
-    K --> N["Fin"]
-
-    subgraph "Funciones Auxiliares"
-        F1["GetUniqueProcessId"]
-        F2["GetImageFileName"]
-        F3["GetImageBaseAddress"]
-    end
-
-    D1 --> F2
-    J --> F1
-    L --> F3
+graph TD
+    A["Inicio: ProcessInfoByName(filename)"]
+    B["Obtener currProcess = PsGetCurrentProcess()"]
+    C["aplList = currProcess + 0x1d8"]
+    D["entry = aplList"]
+    E{"entry != aplList?"}
+    F["Calcular processes = entry - 0x1d8"]
+    G["Obtener imageFileName = GetImageFileName(processes)"]
+    H{"imageFileName es NULL?"}
+    I["Return (Error)"]
+    J["Comparar imageFileName con filename"]
+    K{"¿Son iguales?"}
+    L["Asignar proc.targetProcess = processes"]
+    M["Obtener proc.uniqueProcessId = GetUniqueProcessId(processes)"]
+    N["Obtener proc.imageBaseAddress = GetImageBaseAddress(processes)"]
+    O["Return (Proceso Encontrado)"]
+    P["ExFreePool(imageFileName)"]
+    Q{"entry es NULL?"}
+    R["Return (Error)"]
+    S["entry = entry->Flink"]
+    T["Regresar al ciclo"]
+    U["Return (No Encontrado)"]
+    
+    A --> B  
+    B --> C  
+    C --> D  
+    D --> E  
+    E -- "Sí" --> F  
+    E -- "No" --> U  
+    F --> G  
+    G --> H  
+    H -- "Sí" --> I  
+    H -- "No" --> J  
+    J --> K  
+    K -- "Sí" --> L  
+    L --> M  
+    M --> N  
+    N --> O  
+    K -- "No" --> P  
+    P --> Q  
+    Q -- "Sí" --> R  
+    Q -- "No" --> S  
+    S --> T  
+    T --> E
+```
